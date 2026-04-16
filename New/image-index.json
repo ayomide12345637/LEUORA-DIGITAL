@@ -1,0 +1,55 @@
+{
+  "@context": "https://schema.org",
+  "@type": "ImageGallery",
+  "name": "Leuora Digital Products",
+  "description": "Complete collection of Leuora Digital products including AI prompts, graphic design templates, website kits, email marketing systems, e-commerce stores, digital advertising tools, and file conversion services.",
+  "creator": {
+    "@type": "Organization",
+    "name": "Leuora Digital",
+    "url": "https://www.leuora.xyz"
+  },
+  "image": [
+    {
+      "@type": "ImageObject",
+      "contentUrl": "https://www.leuora.xyz/images/ai-prompt-systems.jpg",
+      "name": "AI Prompt Systems",
+      "description": "Unlock the power of artificial intelligence with our professionally crafted AI prompt systems. These ready-to-use prompts help you generate high-quality content, marketing ideas, product descriptions, business strategies, and more within seconds. Whether you're a creator, entrepreneur, or marketer, our AI prompts are designed to boost productivity, save time, and help you achieve better results using modern AI tools."
+    },
+    {
+      "@type": "ImageObject",
+      "contentUrl": "https://www.leuora.xyz/images/graphic-design-templates.jpg",
+      "name": "Graphic Design Templates",
+      "description": "Create stunning visuals effortlessly with our professionally designed graphic templates. From social media posts and business flyers to marketing banners and promotional materials, our templates help you design like a professional without needing advanced design skills. Simply edit, customize, and publish high-quality graphics that elevate your brand and capture attention online."
+    },
+    {
+      "@type": "ImageObject",
+      "contentUrl": "https://www.leuora.xyz/images/website-builder-kits.jpg",
+      "name": "Website Builder Kits",
+      "description": "Launch professional websites quickly using our ready-to-use website builder kits. These kits include modern layouts, optimized page structures, and customizable sections that make building a website simple and efficient. Whether you're creating a business site, portfolio, landing page, or startup platform, our website kits give you everything you need to get online fast and look professional."
+    },
+    {
+      "@type": "ImageObject",
+      "contentUrl": "https://www.leuora.xyz/images/email-marketing-systems.jpg",
+      "name": "Email Marketing Systems",
+      "description": "Grow your audience and increase conversions with powerful email marketing systems. Our tools help you create automated email campaigns, manage subscribers, and send targeted messages that build relationships with your customers. With ready-made templates and automation features, you can turn visitors into loyal customers and scale your business through effective email communication."
+    },
+    {
+      "@type": "ImageObject",
+      "contentUrl": "https://www.leuora.xyz/images/ecommerce-store-kits.jpg",
+      "name": "E-commerce Store Kits",
+      "description": "Start selling products online with our complete e-commerce store kits. These systems provide everything you need to launch a professional online store, including product pages, checkout systems, and optimized store designs. Whether you're selling digital products, physical goods, or services, our e-commerce kits help you build a reliable online store and grow your sales globally."
+    },
+    {
+      "@type": "ImageObject",
+      "contentUrl": "https://www.leuora.xyz/images/digital-advertising-systems.jpg",
+      "name": "Digital Advertising Systems",
+      "description": "Promote your business effectively with our powerful digital advertising systems designed to help you reach the right audience and drive real results. These tools and resources guide you in creating high-converting advertisements for platforms like social media and search engines. From ad creatives and campaign strategies to targeting and optimization, our advertising systems help you attract more customers, increase brand visibility, and grow your business through smart online advertising."
+    },
+    {
+      "@type": "ImageObject",
+      "contentUrl": "https://www.leuora.xyz/images/file-conversion-tools.jpg",
+      "name": "File Conversion Tools",
+      "description": "Convert and manage your files quickly using our simple and efficient file conversion tools. These tools allow you to transform documents, images, and other file formats into the formats you need for work, business, or online publishing. Designed for speed and convenience, our conversion tools make it easy to handle files without complicated software or technical knowledge."
+    }
+  ]
+}

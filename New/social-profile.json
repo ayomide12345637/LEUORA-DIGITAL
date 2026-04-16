@@ -1,0 +1,13 @@
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Leuora Digital",
+  "url": "https://www.leuora.xyz",
+  "sameAs": [
+    "https://www.facebook.com/share/18JBac47Wx/",
+    "https://www.instagram.com/leuoradigital",
+    "https://www.tiktok.com/@leuore.digital",
+    "https://x.com/leuoradigital",
+    "https://www.youtube.com/@leuoradigital"
+  ]
+}

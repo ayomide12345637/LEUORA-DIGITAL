@@ -1,0 +1,10 @@
+User-agent: Googlebot
+Allow: /
+Allow: /social-profile.json
+Allow: /image-index.json
+Allow: /images/
+
+User-agent: Googlebot-Image
+Allow: /images/
+
+Sitemap: https://www.leuora.xyz/sitemap.xml
