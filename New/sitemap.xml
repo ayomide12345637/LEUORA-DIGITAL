@@ -1,135 +1,120 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
-        xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
+xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
+xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
 
-    <!-- ========== MAIN WEBSITE ========== -->
-    <url>
-        <loc>https://www.leuora.xyz/</loc>
-        <lastmod>2026-04-16</lastmod>
-        <changefreq>daily</changefreq>
-        <priority>1.0</priority>
-    </url>
+<!-- ========== MAIN WEBSITE ========== -->
 
-    <!-- ========== SEO FILES (Tell Google about your social & images) ========== -->
-    <url>
-        <loc>https://www.leuora.xyz/social-profile.json</loc>
-        <changefreq>weekly</changefreq>
-        <priority>0.8</priority>
-    </url>
-    
-    <url>
-        <loc>https://www.leuora.xyz/image-index.json</loc>
-        <changefreq>weekly</changefreq>
-        <priority>0.8</priority>
-    </url>
+<url>
+<loc>https://www.leuora.xyz/</loc>
+<lastmod>2026-04-16</lastmod>
+<changefreq>daily</changefreq>
+<priority>1.0</priority>
+</url>
 
-    <!-- ========== YOUR 7 PRODUCT IMAGES (For Google Images) ========== -->
-    <url>
-        <loc>https://www.leuora.xyz/#ai-prompts</loc>
-        <image:image>
-            <image:loc>https://www.leuora.xyz/images/ai-prompt-systems.jpg</image:loc>
-            <image:title>AI Prompt Systems</image:title>
-            <image:caption>Unlock the power of artificial intelligence with our professionally crafted AI prompt systems</image:caption>
-        </image:image>
-    </url>
+<!-- ========== SEO FILES ========== -->
 
-    <url>
-        <loc>https://www.leuora.xyz/#graphic-design</loc>
-        <image:image>
-            <image:loc>https://www.leuora.xyz/images/graphic-design-templates.jpg</image:loc>
-            <image:title>Graphic Design Templates</image:title>
-            <image:caption>Create stunning visuals effortlessly with our professionally designed graphic templates</image:caption>
-        </image:image>
-    </url>
+<url>
+<loc>https://www.leuora.xyz/social-profile.json</loc>
+<changefreq>weekly</changefreq>
+<priority>0.8</priority>
+</url>
 
-    <url>
-        <loc>https://www.leuora.xyz/#website-kits</loc>
-        <image:image>
-            <image:loc>https://www.leuora.xyz/images/website-builder-kits.jpg</image:loc>
-            <image:title>Website Builder Kits</image:title>
-            <image:caption>Launch professional websites quickly using our ready-to-use website builder kits</image:caption>
-        </image:image>
-    </url>
+<url>
+<loc>https://www.leuora.xyz/image-index.json</loc>
+<changefreq>weekly</changefreq>
+<priority>0.8</priority>
+</url>
 
-    <url>
-        <loc>https://www.leuora.xyz/#email-marketing</loc>
-        <image:image>
-            <image:loc>https://www.leuora.xyz/images/email-marketing-systems.jpg</image:loc>
-            <image:title>Email Marketing Systems</image:title>
-            <image:caption>Grow your audience and increase conversions with powerful email marketing systems</image:caption>
-        </image:image>
-    </url>
+<!-- ========== AI PROMPTS PAGE ========== -->
 
-    <url>
-        <loc>https://www.leuora.xyz/#ecommerce</loc>
-        <image:image>
-            <image:loc>https://www.leuora.xyz/images/ecommerce-store-kits.jpg</image:loc>
-            <image:title>E-commerce Store Kits</image:title>
-            <image:caption>Start selling products online with our complete e-commerce store kits</image:caption>
-        </image:image>
-    </url>
+<url>
+<loc>https://www.leuora.xyz/ai-prompts</loc>
+<image:image>
+<image:loc>https://www.leuora.xyz/images/ai-prompt-systems.jpg</image:loc>
+<image:title>AI Prompt Systems</image:title>
+<image:caption>Unlock the power of artificial intelligence with our professionally crafted AI prompt systems</image:caption>
+</image:image>
+</url>
 
-    <url>
-        <loc>https://www.leuora.xyz/#digital-ads</loc>
-        <image:image>
-            <image:loc>https://www.leuora.xyz/images/digital-advertising-systems.jpg</image:loc>
-            <image:title>Digital Advertising Systems</image:title>
-            <image:caption>Promote your business effectively with our powerful digital advertising systems</image:caption>
-        </image:image>
-    </url>
+<!-- ========== GRAPHIC DESIGN ========== -->
 
-    <url>
-        <loc>https://www.leuora.xyz/#file-conversion</loc>
-        <image:image>
-            <image:loc>https://www.leuora.xyz/images/file-conversion-tools.jpg</image:loc>
-            <image:title>File Conversion Tools</image:title>
-            <image:caption>Convert and manage your files quickly using our simple and efficient file conversion tools</image:caption>
-        </image:image>
-    </url>
+<url>
+<loc>https://www.leuora.xyz/graphic-design</loc>
+<image:image>
+<image:loc>https://www.leuora.xyz/images/graphic-design-templates.jpg</image:loc>
+<image:title>Graphic Design Templates</image:title>
+<image:caption>Create stunning visuals effortlessly with our professionally designed graphic templates</image:caption>
+</image:image>
+</url>
 
-    <!-- ========== YOUR SOCIAL MEDIA PROFILES ========== -->
-    <url>
-        <loc>https://www.leuora.xyz/#facebook</loc>
-        <changefreq>monthly</changefreq>
-        <priority>0.5</priority>
-    </url>
-    
-    <url>
-        <loc>https://www.leuora.xyz/#instagram</loc>
-        <changefreq>monthly</changefreq>
-        <priority>0.5</priority>
-    </url>
-    
-    <url>
-        <loc>https://www.leuora.xyz/#tiktok</loc>
-        <changefreq>monthly</changefreq>
-        <priority>0.5</priority>
-    </url>
-    
-    <url>
-        <loc>https://www.leuora.xyz/#x-twitter</loc>
-        <changefreq>monthly</changefreq>
-        <priority>0.5</priority>
-    </url>
-    
-    <url>
-        <loc>https://www.leuora.xyz/#youtube</loc>
-        <changefreq>weekly</changefreq>
-        <priority>0.7</priority>
-    </url>
+<!-- ========== WEBSITE KITS ========== -->
 
-    <!-- ========== LEGAL PAGES ========== -->
-    <url>
-        <loc>https://www.leuora.xyz/#privacy</loc>
-        <changefreq>monthly</changefreq>
-        <priority>0.4</priority>
-    </url>
-    
-    <url>
-        <loc>https://www.leuora.xyz/#terms</loc>
-        <changefreq>monthly</changefreq>
-        <priority>0.4</priority>
-    </url>
+<url>
+<loc>https://www.leuora.xyz/website-kits</loc>
+<image:image>
+<image:loc>https://www.leuora.xyz/images/website-builder-kits.jpg</image:loc>
+<image:title>Website Builder Kits</image:title>
+<image:caption>Launch professional websites quickly using our ready-to-use website builder kits</image:caption>
+</image:image>
+</url>
+
+<!-- ========== EMAIL MARKETING ========== -->
+
+<url>
+<loc>https://www.leuora.xyz/email-marketing</loc>
+<image:image>
+<image:loc>https://www.leuora.xyz/images/email-marketing-systems.jpg</image:loc>
+<image:title>Email Marketing Systems</image:title>
+<image:caption>Grow your audience and increase conversions with powerful email marketing systems</image:caption>
+</image:image>
+</url>
+
+<!-- ========== ECOMMERCE ========== -->
+
+<url>
+<loc>https://www.leuora.xyz/ecommerce</loc>
+<image:image>
+<image:loc>https://www.leuora.xyz/images/ecommerce-store-kits.jpg</image:loc>
+<image:title>E-commerce Store Kits</image:title>
+<image:caption>Start selling products online with our complete e-commerce store kits</image:caption>
+</image:image>
+</url>
+
+<!-- ========== DIGITAL ADS ========== -->
+
+<url>
+<loc>https://www.leuora.xyz/digital-ads</loc>
+<image:image>
+<image:loc>https://www.leuora.xyz/images/digital-advertising-systems.jpg</image:loc>
+<image:title>Digital Advertising Systems</image:title>
+<image:caption>Promote your business effectively with our powerful digital advertising systems</image:caption>
+</image:image>
+</url>
+
+<!-- ========== FILE CONVERSION ========== -->
+
+<url>
+<loc>https://www.leuora.xyz/file-conversion</loc>
+<image:image>
+<image:loc>https://www.leuora.xyz/images/file-conversion-tools.jpg</image:loc>
+<image:title>File Conversion Tools</image:title>
+<image:caption>Convert and manage your files quickly using our simple and efficient file conversion tools</image:caption>
+</image:image>
+</url>
+
+<!-- ========== SOCIAL MEDIA (kept as you had) ========== -->
+
+<url><loc>https://www.leuora.xyz/#facebook</loc></url>
+<url><loc>https://www.leuora.xyz/#instagram</loc></url>
+<url><loc>https://www.leuora.xyz/#tiktok</loc></url>
+<url><loc>https://www.leuora.xyz/#x-twitter</loc></url>
+<url><loc>https://www.leuora.xyz/#youtube</loc></url>
+
+<!-- ========== LEGAL ========== -->
+
+<url><loc>https://www.leuora.xyz/#privacy</loc></url>
+<url><loc>https://www.leuora.xyz/#terms</loc></url>
 
 </urlset>
