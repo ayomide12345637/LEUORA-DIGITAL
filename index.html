@@ -1536,22 +1536,25 @@ function restartTutorial() {
         }
         
         if (category === 'File Conversion') {
-            let html = '<div class="horizontal-list">';
-            snapshot.forEach(doc => {
-                const p = doc.data();
-                html += `
-                    <div class="horizontal-list-item" onclick="openProductDetail('${doc.id}', '${category}')">
-                        <h4>${escapeHtml(p.title)}</h4>
-                        <p>${escapeHtml(p.shortDesc)}</p>
-                        <div class="price">$${p.price}</div>
-                        <button class="btn-yellow" style="margin-top:12px; width:100%;">View Details</button>
-                    </div>
-                `;
-            });
-            html += '</div>';
-            container.innerHTML = html;
-            return;
-        }
+    let html = '<div class="products-grid">';
+    snapshot.forEach(doc => {
+        const p = doc.data();
+        html += `
+            <div class="product-card" onclick="openProductDetail('${doc.id}', '${category}')">
+                <div style="height: 100px; background: linear-gradient(135deg, #1E40AF, #3B82F6); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                    <span class="material-icons" style="font-size: 48px; color: white;">description</span>
+                </div>
+                <h4>${escapeHtml(p.title)}</h4>
+                <p>${escapeHtml(p.shortDesc)}</p>
+                <div class="price">$${p.price}</div>
+                <button class="btn-yellow" style="margin-top: 10px; width: 100%;">View Details</button>
+            </div>
+        `;
+    });
+    html += '</div>';
+    container.innerHTML = html;
+    return;
+}
         
         if (category === 'AI Prompts') {
             let html = '<div class="products-grid">';
@@ -1714,11 +1717,11 @@ function restartTutorial() {
             const isAiPrompt = p.category === 'AI Prompts';
             const isFileConversion = p.category === 'File Conversion';
             
-            if (isFileConversion) return;
-            
-            html += `
+             html += `
                 <div class="product-card" onclick="openProductDetail('${doc.id}', '${p.category}')">
-                    ${!isAiPrompt && p.mediaUrl ? `<img src="${p.mediaUrl}" onerror="this.src='https://via.placeholder.com/150'">` : (isAiPrompt ? '<div style="height:140px; background:linear-gradient(135deg,#1E40AF,#3B82F6); border-radius:12px; display:flex; align-items:center; justify-content:center;"><span class="material-icons" style="font-size:48px; color:white;">psychology</span></div>' : '<div style="height:140px; background:#e2e8f0; border-radius:10px; display:flex; align-items:center; justify-content:center;">📦</div>')}
+                  ${p.category === 'File Conversion' ? 
+    '<div style="height:140px; background: linear-gradient(135deg, #1E40AF, #3B82F6); border-radius: 12px; display: flex; align-items: center; justify-content: center;"><span class="material-icons" style="font-size: 48px; color: white;">description</span></div>' 
+    : (!isAiPrompt && p.mediaUrl ? `<img src="${p.mediaUrl}" onerror="this.src='https://via.placeholder.com/150'">` : (isAiPrompt ? '<div style="height:140px; background:linear-gradient(135deg,#1E40AF,#3B82F6); border-radius:12px; display:flex; align-items:center; justify-content:center;"><span class="material-icons" style="font-size:48px; color:white;">psychology</span></div>' : '<div style="height:140px; background:#e2e8f0; border-radius:10px; display:flex; align-items:center; justify-content:center;">📦</div>'))}
                     <h4>${escapeHtml(p.title)}</h4>
                     <p>${escapeHtml(p.shortDesc)}</p>
                     <div class="price">$${p.price}</div>
