@@ -1520,8 +1520,18 @@ function restartTutorial() {
     function showHowItWorks() { loadHowItWorksPage(); showScreen('howItWorksScreen'); }
     function showExploreProducts() { loadAllProductsPage(); showScreen('exploreProductsScreen'); }
     
-    async function showCategoryPage(categoryName) {
-    document.getElementById('categoryTitle').innerText = categoryName;
+async function showCategoryPage(categoryName) {
+    // Special handling for Website Services - show sub-categories first
+    if (categoryName === 'Website Services') {
+        document.getElementById('categoryTitle').innerHTML = 'Website Services';
+        document.getElementById('categoryProducts').innerHTML = '<div class="loading-spinner"></div>';
+        showScreen('categoryPageScreen');
+        showWebsiteServicesSubCategories();
+        return;
+    }
+    
+    // For all other categories, show products directly
+    document.getElementById('categoryTitle').innerHTML = categoryName;
     document.getElementById('categoryProducts').innerHTML = '<div class="loading-spinner"></div>';
     showScreen('categoryPageScreen');
     await loadCategoryProducts(categoryName);
@@ -1703,6 +1713,116 @@ function restartTutorial() {
         }, 1000);
     };
     
+// Show sub-categories for Website Services (DYNAMIC - loads from Firebase)
+async function showWebsiteServicesSubCategories() {
+    const container = document.getElementById('categoryProducts');
+    
+    // Show loading spinner
+    container.innerHTML = '<div class="loading-spinner"></div>';
+    
+    try {
+        // Load sub-categories from Firebase
+        const subCategoriesSnapshot = await db.collection('subCategories')
+            .where('parentCategory', '==', 'Website Services')
+            .get();
+        
+        if (subCategoriesSnapshot.empty) {
+            container.innerHTML = `
+                <div style="text-align: center; padding: 60px 20px;">
+                    <span class="material-icons" style="font-size: 64px; color: #94A3B8;">folder_open</span>
+                    <p style="color: #64748B; margin-top: 20px;">No sub-categories available yet.</p>
+                    <p style="color: #94A3B8; font-size: 0.85rem;">Check back soon for new products!</p>
+                </div>
+            `;
+            return;
+        }
+        
+        let html = `<div style="margin-bottom: 30px;">
+            <p style="color: #64748B; text-align: center; margin-bottom: 20px;">📂 Select a sub-category to browse products</p>
+            <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
+        `;
+        
+        subCategoriesSnapshot.forEach(doc => {
+            const sub = doc.data();
+            html += `
+                <div class="card" onclick="showWebsiteServicesProducts('${escapeHtml(sub.name)}')">
+                    <span class="material-icons" style="font-size: 48px;">folder</span>
+                    <div>
+                        <strong>📁 ${escapeHtml(sub.name)}</strong>
+                        <p>Browse all ${escapeHtml(sub.name)} products</p>
+                    </div>
+                </div>
+            `;
+        });
+        
+        html += `</div></div>`;
+        container.innerHTML = html;
+        
+    } catch(error) {
+        console.error('Error loading sub-categories:', error);
+        container.innerHTML = '<p style="text-align:center; padding:40px; color:#EF4444;">Error loading categories. Please refresh the page.</p>';
+    }
+}
+
+// Show products for a specific sub-category under Website Services
+async function showWebsiteServicesProducts(subCategoryName) {
+    document.getElementById('categoryTitle').innerHTML = subCategoryName;
+    document.getElementById('categoryProducts').innerHTML = '<div class="loading-spinner"></div>';
+    showScreen('categoryPageScreen');
+    
+    try {
+        const snapshot = await db.collection('products')
+            .where('category', '==', 'Website Services')
+            .where('subCategory', '==', subCategoryName)
+            .get();
+        
+        const container = document.getElementById('categoryProducts');
+        
+        if (snapshot.empty) {
+            container.innerHTML = `
+                <div style="text-align: center; padding: 60px 20px;">
+                    <span class="material-icons" style="font-size: 64px; color: #94A3B8;">inventory</span>
+                    <p style="color: #64748B; margin-top: 20px;">No products in "${escapeHtml(subCategoryName)}" yet.</p>
+                    <button class="btn-outline" onclick="showCategoryPage('Website Services')" style="margin-top: 20px;">
+                        ← Back to Categories
+                    </button>
+                </div>
+            `;
+            return;
+        }
+        
+        let html = '<div class="products-grid">';
+        snapshot.forEach(doc => {
+            const p = doc.data();
+            html += `
+                <div class="product-card" onclick="openProductDetail('${doc.id}', '${p.category}')">
+                    ${p.mediaUrl ? `<img src="${p.mediaUrl}" onerror="this.src='https://via.placeholder.com/150?text=No+Image'">` : '<div style="height:140px; background: linear-gradient(135deg, #1E40AF, #3B82F6); border-radius:12px; display:flex; align-items:center; justify-content:center;"><span class="material-icons" style="font-size:48px; color:white;">web</span></div>'}
+                    <h4>${escapeHtml(p.title)}</h4>
+                    <p>${escapeHtml(p.shortDesc || '')}</p>
+                    <div class="price">$${p.price}</div>
+                    <button class="btn-yellow" style="margin-top:10px; width:100%;">View Details</button>
+                </div>
+            `;
+        });
+        html += '</div>';
+        
+        // Add a back button to return to sub-categories
+        html += `
+            <div style="text-align: center; margin-top: 30px;">
+                <button class="btn-outline" onclick="showCategoryPage('Website Services')" style="padding: 10px 30px;">
+                    ← Back to All Website Services
+                </button>
+            </div>
+        `;
+        
+        container.innerHTML = html;
+    } catch(error) {
+        console.error('Error loading products:', error);
+        document.getElementById('categoryProducts').innerHTML = '<p style="text-align:center; padding:40px; color:#EF4444;">Error loading products. Please try again.</p>';
+    }
+}
+   
+   
     async function loadAllProductsPage() {
         const snapshot = await db.collection('products').get();
         const container = document.getElementById('allProductsGrid');
