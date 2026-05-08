@@ -21,6 +21,9 @@
 <link rel="apple-touch-icon" href="favicon.png">
 <link rel="canonical" href="https://www.leuora.xyz/" />
 
+<!-- PayPal SDK - ADDED FOR LIVE PAYMENTS -->
+<script src="https://www.paypal.com/sdk/js?client-id=ASm7DAejnOoEgjmPyZdodAZlqH5EXjkmVAyXYWYHlfPu45Equ2c2V0YdV_yP97pKulEBRA3bkqatouTR&currency=USD&intent=capture"></script>
+
 <!-- Link to SEO JSON files in root folder -->
 <link rel="alternate" type="application/json" href="/social-profile.json">
 <link rel="alternate" type="application/json" href="/image-index.json">
@@ -1276,6 +1279,241 @@ No credit card needed.</p>
     let unreadCount = 0;
     let currentProductForChat = null;
     
+    // PayPal Live Payment Function - REPLACES the showPaymentComingSoon function
+    window.processLivePayPalPayment = async function(productId, productTitle, productPrice, productFullPrompt, isAIPrompt) {
+        if (!auth.currentUser) {
+            alert('Please login first to purchase');
+            showAuthScreen('login');
+            return;
+        }
+        
+        // Create payment modal with live PayPal buttons
+        const modalHtml = `
+            <div id="livePaymentModal" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: flex; justify-content: center; align-items: center; z-index: 100000;" onclick="if(event.target===this) this.remove()">
+                <div style="background: white; padding: 30px; border-radius: 24px; max-width: 500px; width: 90%; text-align: center; max-height: 80vh; overflow-y: auto;" onclick="event.stopPropagation()">
+                    <span style="font-size: 48px; margin-bottom: 15px; display: block;">💳</span>
+                    <h2 style="color: #1E40AF; margin-bottom: 15px;">Complete Your Payment</h2>
+                    <p style="color: #475569; margin-bottom: 10px;">Product: <strong>${escapeHtml(productTitle)}</strong></p>
+                    <p style="color: #475569; margin-bottom: 20px;">Amount: <strong style="font-size: 1.5rem; color: #22C55E;">$${parseFloat(productPrice).toFixed(2)} USD</strong></p>
+                    <div id="paypal-live-button-container" style="margin: 20px 0;"></div>
+                    <hr style="margin: 20px 0;">
+                    <button onclick="document.getElementById('livePaymentModal').remove()" style="background: #E5E7EB; color: #1E2937; border: none; padding: 10px 25px; border-radius: 30px; font-weight: 600; cursor: pointer;">Cancel</button>
+                </div>
+            </div>
+        `;
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+        
+        // Render PayPal buttons
+        if (window.paypal) {
+            window.paypal.Buttons({
+                createOrder: function(data, actions) {
+                    return actions.order.create({
+                        purchase_units: [{
+                            description: productTitle,
+                            amount: {
+                                value: parseFloat(productPrice).toFixed(2),
+                                currency_code: 'USD'
+                            }
+                        }]
+                    });
+                },
+                onApprove: function(data, actions) {
+                    return actions.order.capture().then(async function(details) {
+                        document.getElementById('livePaymentModal')?.remove();
+                        showLoading();
+                        
+                        try {
+                            // Record payment in Firebase
+                            await db.collection('payments').add({
+                                userId: auth.currentUser.uid,
+                                userEmail: auth.currentUser.email,
+                                productId: productId,
+                                productTitle: productTitle,
+                                amount: productPrice,
+                                paypalOrderId: details.id,
+                                paypalPayerEmail: details.payer.email_address,
+                                status: 'completed',
+                                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                            });
+                            
+                            // If this is an AI Prompt, show the prompt immediately
+                            if (isAIPrompt && productFullPrompt) {
+                                hideLoading();
+                                const promptModal = `
+                                    <div id="unlockedPromptModal" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: flex; justify-content: center; align-items: center; z-index: 100001;" onclick="if(event.target===this) this.remove()">
+                                        <div style="background: #1E293B; padding: 30px; border-radius: 24px; max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto;" onclick="event.stopPropagation()">
+                                            <h3 style="color: #F4B400; margin-bottom: 15px;">✅ Payment Successful!</h3>
+                                            <h4 style="color: white; margin-bottom: 10px;">${escapeHtml(productTitle)} - Unlocked Prompt</h4>
+                                            <div style="background: #0F172A; color: #E2E8F0; padding: 20px; border-radius: 12px; font-family: monospace; white-space: pre-wrap; margin: 15px 0; font-size: 0.85rem; max-height: 300px; overflow-y: auto;">
+                                                ${escapeHtml(productFullPrompt)}
+                                            </div>
+                                            <button onclick="navigator.clipboard.writeText(document.querySelector('#unlockedPromptModal div[style*=\"monospace\"]').innerText).then(()=>alert('✅ Prompt copied to clipboard!'))" style="background: #1E40AF; color: white; border: none; padding: 10px 20px; border-radius: 30px; cursor: pointer; margin-right: 10px;">📋 Copy Prompt</button>
+                                            <button onclick="document.getElementById('unlockedPromptModal').remove()" style="background: #22C55E; color: white; border: none; padding: 10px 20px; border-radius: 30px; cursor: pointer;">Close</button>
+                                        </div>
+                                    </div>
+                                `;
+                                document.body.insertAdjacentHTML('beforeend', promptModal);
+                            } else {
+                                // For non-AI products, send a message to admin chat
+                                await db.collection('chats').add({
+                                    userId: auth.currentUser.uid,
+                                    sender: 'user',
+                                    type: 'payment_notification',
+                                    message: `I have successfully paid $${productPrice} for ${productTitle}. My PayPal transaction ID: ${details.id}. Please deliver my product.`,
+                                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                                    read: false
+                                });
+                                hideLoading();
+                                alert(`✅ Payment successful! Your payment of $${productPrice} for "${productTitle}" has been received. The admin will deliver your product via chat shortly.`);
+                                openChatRoom();
+                            }
+                        } catch(error) {
+                            console.error('Error recording payment:', error);
+                            hideLoading();
+                            alert('Payment successful but there was an error recording it. Please contact admin with your PayPal transaction ID: ' + details.id);
+                        }
+                    });
+                },
+                onCancel: function(data) {
+                    document.getElementById('livePaymentModal')?.remove();
+                    alert('Payment cancelled. You can try again anytime.');
+                },
+                onError: function(err) {
+                    console.error('PayPal Error:', err);
+                    document.getElementById('livePaymentModal')?.remove();
+                    alert('Payment failed. Please try again or contact support.');
+                }
+            }).render('#paypal-live-button-container');
+        } else {
+            document.getElementById('paypal-live-button-container').innerHTML = '<p style="color:red;">Payment system loading failed. Please refresh the page.</p>';
+        }
+    };
+    
+    // Modified buyNowPrompt function with live PayPal
+    window.buyNowPrompt = async function(productId) {
+        showLoading();
+        const doc = await db.collection('products').doc(productId).get();
+        const p = doc.data();
+        hideLoading();
+        
+        // Show payment modal with live PayPal
+        const modalHtml = `
+            <div id="livePaymentModal" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: flex; justify-content: center; align-items: center; z-index: 100000;" onclick="if(event.target===this) this.remove()">
+                <div style="background: white; padding: 30px; border-radius: 24px; max-width: 500px; width: 90%; text-align: center; max-height: 80vh; overflow-y: auto;" onclick="event.stopPropagation()">
+                    <span style="font-size: 48px; margin-bottom: 15px; display: block;">💳</span>
+                    <h2 style="color: #1E40AF; margin-bottom: 15px;">Complete Your Payment</h2>
+                    <p style="color: #475569; margin-bottom: 10px;">Product: <strong>${escapeHtml(p.title)}</strong></p>
+                    <p style="color: #475569; margin-bottom: 10px;"><strong>Description:</strong> ${escapeHtml(p.shortDesc)}</p>
+                    <p style="color: #475569; margin-bottom: 20px;">Amount: <strong style="font-size: 1.5rem; color: #22C55E;">$${parseFloat(p.price).toFixed(2)} USD</strong></p>
+                    <div id="paypal-live-button-container" style="margin: 20px 0;"></div>
+                    <hr style="margin: 20px 0;">
+                    <button onclick="document.getElementById('livePaymentModal').remove()" style="background: #E5E7EB; color: #1E2937; border: none; padding: 10px 25px; border-radius: 30px; font-weight: 600; cursor: pointer;">Cancel</button>
+                </div>
+            </div>
+        `;
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+        
+        if (window.paypal) {
+            window.paypal.Buttons({
+                createOrder: function(data, actions) {
+                    return actions.order.create({
+                        purchase_units: [{
+                            description: p.title,
+                            amount: { value: parseFloat(p.price).toFixed(2), currency_code: 'USD' }
+                        }]
+                    });
+                },
+                onApprove: function(data, actions) {
+                    return actions.order.capture().then(async function(details) {
+                        document.getElementById('livePaymentModal')?.remove();
+                        showLoading();
+                        
+                        try {
+                            await db.collection('payments').add({
+                                userId: auth.currentUser.uid,
+                                userEmail: auth.currentUser.email,
+                                productId: productId,
+                                productTitle: p.title,
+                                amount: p.price,
+                                paypalOrderId: details.id,
+                                status: 'completed',
+                                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                            });
+                            
+                            if (p.fullPrompt) {
+                                hideLoading();
+                                const promptModal = `
+                                    <div id="unlockedPromptModal" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: flex; justify-content: center; align-items: center; z-index: 100001;" onclick="if(event.target===this) this.remove()">
+                                        <div style="background: #1E293B; padding: 30px; border-radius: 24px; max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto;" onclick="event.stopPropagation()">
+                                            <h3 style="color: #F4B400; margin-bottom: 15px;">✅ Payment Successful!</h3>
+                                            <h4 style="color: white; margin-bottom: 10px;">${escapeHtml(p.title)} - Unlocked Prompt</h4>
+                                            <div style="background: #0F172A; color: #E2E8F0; padding: 20px; border-radius: 12px; font-family: monospace; white-space: pre-wrap; margin: 15px 0; font-size: 0.85rem; max-height: 300px; overflow-y: auto;">
+                                                ${escapeHtml(p.fullPrompt)}
+                                            </div>
+                                            <button onclick="navigator.clipboard.writeText(document.querySelector('#unlockedPromptModal div[style*=\"monospace\"]').innerText).then(()=>alert('✅ Prompt copied!'))" style="background: #1E40AF; color: white; border: none; padding: 10px 20px; border-radius: 30px; cursor: pointer; margin-right: 10px;">📋 Copy Prompt</button>
+                                            <button onclick="document.getElementById('unlockedPromptModal').remove()" style="background: #22C55E; color: white; border: none; padding: 10px 20px; border-radius: 30px; cursor: pointer;">Close</button>
+                                        </div>
+                                    </div>
+                                `;
+                                document.body.insertAdjacentHTML('beforeend', promptModal);
+                            } else {
+                                await db.collection('chats').add({
+                                    userId: auth.currentUser.uid,
+                                    sender: 'user',
+                                    message: `I have successfully paid $${p.price} for ${p.title}. My PayPal transaction ID: ${details.id}. Please deliver my product.`,
+                                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                                    read: false
+                                });
+                                hideLoading();
+                                alert(`✅ Payment successful! The admin will deliver your product via chat shortly.`);
+                                openChatRoom();
+                            }
+                        } catch(error) {
+                            console.error('Error:', error);
+                            hideLoading();
+                            alert('Payment successful but there was an error. Please contact admin with transaction ID: ' + details.id);
+                        }
+                    });
+                },
+                onCancel: function() {
+                    document.getElementById('livePaymentModal')?.remove();
+                    alert('Payment cancelled.');
+                },
+                onError: function(err) {
+                    console.error('PayPal Error:', err);
+                    document.getElementById('livePaymentModal')?.remove();
+                    alert('Payment failed. Please try again.');
+                }
+            }).render('#paypal-live-button-container');
+        } else {
+            document.getElementById('paypal-live-button-container').innerHTML = '<p style="color:red;">Payment system loading failed. Please refresh.</p>';
+        }
+    };
+    
+    // Keep the original showPaymentComingSoon function but modify it to use live PayPal for products
+    window.showPaymentComingSoon = function(messageId, price, productId, productTitle, productData) {
+        // For products from chat, use live PayPal
+        if (productId && productTitle) {
+            window.processLivePayPalPayment(productId, productTitle, price, null, false);
+        } else {
+            // Fallback message for any other payment requests
+            const modalHtml = `
+                <div id="paymentModal" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; justify-content: center; align-items: center; z-index: 99999;" onclick="this.remove()">
+                    <div style="background: white; padding: 30px; border-radius: 24px; max-width: 350px; width: 90%; text-align: center;" onclick="event.stopPropagation()">
+                        <span style="font-size: 48px; margin-bottom: 15px; display: block;">💳</span>
+                        <h2 style="color: #1E40AF; margin-bottom: 15px;">Complete Payment</h2>
+                        <p style="color: #475569; margin-bottom: 20px;">Amount: <strong style="font-size: 1.3rem; color: #22C55E;">$${parseFloat(price).toFixed(2)}</strong></p>
+                        <div style="display: flex; gap: 10px; justify-content: center;">
+                            <button onclick="if(window.openChatRoom) window.openChatRoom(); document.getElementById('paymentModal').remove();" style="background: #1E40AF; color: white; border: none; padding: 12px 20px; border-radius: 30px; cursor: pointer;">💬 Chat Admin</button>
+                            <button onclick="document.getElementById('paymentModal').remove()" style="background: #E5E7EB; color: #1E2937; border: none; padding: 12px 20px; border-radius: 30px; cursor: pointer;">Close</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+        }
+    };
+    
     // ============= NEW FUNCTION: Control chat visibility based on current page =============
     function updateChatVisibility() {
         const chatWidget = document.querySelector('.chat-widget');
@@ -1306,7 +1544,6 @@ No credit card needed.</p>
         } else if (activeScreenId === 'complaintScreen') {
             shouldShowChat = true;
         } else if (isProductModalVisible) {
-            // If product modal is open, we might want chat available
             shouldShowChat = true;
         }
         
@@ -1323,7 +1560,6 @@ No credit card needed.</p>
     
     // Monitor page changes to update chat visibility
     function observeScreenChanges() {
-        // Create a MutationObserver to watch for class changes on screens
         const observer = new MutationObserver(function(mutations) {
             mutations.forEach(function(mutation) {
                 if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
@@ -1332,12 +1568,10 @@ No credit card needed.</p>
             });
         });
         
-        // Observe all screens
         document.querySelectorAll('.screen').forEach(screen => {
             observer.observe(screen, { attributes: true });
         });
         
-        // Initial check
         updateChatVisibility();
     }
     
@@ -1367,7 +1601,6 @@ const tutorialSteps = [
 ];
 
 function startTutorial() {
-    // Check if user has seen tutorial before
     const hasSeenTutorial = localStorage.getItem('leuora_tutorial_seen');
     if (hasSeenTutorial) return;
     
@@ -1376,7 +1609,6 @@ function startTutorial() {
 }
 
 function showTutorialStep() {
-    // Remove any existing popups
     const existingPopup = document.querySelector('.tutorial-popup');
     if (existingPopup) existingPopup.remove();
     
@@ -1394,13 +1626,8 @@ function showTutorialStep() {
         return;
     }
     
-    // Add highlight class
     targetElement.classList.add('tutorial-highlight');
-    
-    // Get position of target element
     const rect = targetElement.getBoundingClientRect();
-    
-    // Create popup
     const popup = document.createElement('div');
     popup.className = `tutorial-popup ${step.position}`;
     popup.innerHTML = `
@@ -1410,7 +1637,6 @@ function showTutorialStep() {
     `;
     
     document.body.appendChild(popup);
-    
     const popupRect = popup.getBoundingClientRect();
     
     if (step.position === 'top') {
@@ -1421,7 +1647,6 @@ function showTutorialStep() {
         popup.style.top = `${rect.bottom + 10}px`;
     }
     
-    // Ensure popup stays within viewport
     if (parseInt(popup.style.left) < 10) {
         popup.style.left = '10px';
     }
@@ -1431,7 +1656,6 @@ function showTutorialStep() {
 }
 
 function nextTutorialStep() {
-    // Remove highlight from current element
     const currentStep = tutorialSteps[currentTutorialStep];
     const currentElement = document.querySelector(currentStep.element);
     if (currentElement) {
@@ -1443,36 +1667,28 @@ function nextTutorialStep() {
 }
 
 function endTutorial() {
-    // Remove any remaining popups
     const popup = document.querySelector('.tutorial-popup');
     if (popup) popup.remove();
     
-    // Remove all highlights
     document.querySelectorAll('.tutorial-highlight').forEach(el => {
         el.classList.remove('tutorial-highlight');
     });
     
-    // Save that user has seen tutorial
     localStorage.setItem('leuora_tutorial_seen', 'true');
 }
 
 function restartTutorial() {
-    // Clear the saved setting
     localStorage.removeItem('leuora_tutorial_seen');
     
-    // Remove any existing popups
     const popup = document.querySelector('.tutorial-popup');
     if (popup) popup.remove();
     
-    // Remove all highlights
     document.querySelectorAll('.tutorial-highlight').forEach(el => {
         el.classList.remove('tutorial-highlight');
     });
     
-    // Reset tutorial step
     currentTutorialStep = 0;
     
-    // Small delay then start tutorial
     setTimeout(() => {
         startTutorial();
     }, 300);
@@ -1496,7 +1712,7 @@ function restartTutorial() {
     function showScreen(id) {
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
         document.getElementById(id).classList.add('active');
-        updateChatVisibility(); // Update chat visibility when screen changes
+        updateChatVisibility();
     }
     
     function showLoading() { document.getElementById('loadingOverlay').style.display = 'flex'; }
@@ -1521,7 +1737,6 @@ function restartTutorial() {
     function showExploreProducts() { loadAllProductsPage(); showScreen('exploreProductsScreen'); }
     
 async function showCategoryPage(categoryName) {
-    // Special handling for Website Services - show sub-categories first
     if (categoryName === 'Website Services') {
         document.getElementById('categoryTitle').innerHTML = 'Website Services';
         document.getElementById('categoryProducts').innerHTML = '<div class="loading-spinner"></div>';
@@ -1530,7 +1745,6 @@ async function showCategoryPage(categoryName) {
         return;
     }
     
-    // For all other categories, show products directly
     document.getElementById('categoryTitle').innerHTML = categoryName;
     document.getElementById('categoryProducts').innerHTML = '<div class="loading-spinner"></div>';
     showScreen('categoryPageScreen');
@@ -1631,30 +1845,13 @@ async function showCategoryPage(categoryName) {
                 `;
             }
             modal.style.display = 'flex';
-            updateChatVisibility(); // Update chat visibility when modal opens
+            updateChatVisibility();
         });
     };
     
     window.closeDetailModal = function() {
         document.getElementById('productDetailModal').style.display = 'none';
-        updateChatVisibility(); // Update when modal closes
-    };
-    
-    window.buyNowPrompt = async function(productId) {
-        showLoading();
-        const doc = await db.collection('products').doc(productId).get();
-        const p = doc.data();
-        hideLoading();
-        
-        const modal = document.getElementById('productDetailModal');
-        const detailContent = document.getElementById('detailContent');
-        
-        detailContent.innerHTML = `
-            <h3 style="color:#1E40AF;">${escapeHtml(p.title)} - Full Prompt</h3>
-            <div class="prompt-content" id="fullPromptText">${escapeHtml(p.fullPrompt || 'No prompt content available. Please contact admin.')}</div>
-            <button class="copy-btn" onclick="copyPromptToClipboard()">📋 Copy to Clipboard</button>
-            <button class="btn-outline" style="margin-top:15px;" onclick="closeDetailModal()">Close</button>
-        `;
+        updateChatVisibility();
     };
     
     window.copyPromptToClipboard = function() {
@@ -1717,11 +1914,9 @@ async function showCategoryPage(categoryName) {
 async function showWebsiteServicesSubCategories() {
     const container = document.getElementById('categoryProducts');
     
-    // Show loading spinner
     container.innerHTML = '<div class="loading-spinner"></div>';
     
     try {
-        // Load sub-categories from Firebase
         const subCategoriesSnapshot = await db.collection('subCategories')
             .where('parentCategory', '==', 'Website Services')
             .get();
@@ -1806,7 +2001,6 @@ async function showWebsiteServicesProducts(subCategoryName) {
         });
         html += '</div>';
         
-        // Add a back button to return to sub-categories
         html += `
             <div style="text-align: center; margin-top: 30px;">
                 <button class="btn-outline" onclick="showCategoryPage('Website Services')" style="padding: 10px 30px;">
@@ -1916,7 +2110,6 @@ async function showWebsiteServicesProducts(subCategoryName) {
     
 // ============================================
 // AUTO VIDEO INDEXING SYSTEM
-// Watches Firebase for new videos, pings Google automatically
 // ============================================
 
 function extractYouTubeId(url) {
@@ -2036,7 +2229,6 @@ function watchForNewVideos() {
                 generateSitemap();
                 pingGoogle();
                 
-                // Show notification
                 const notif = document.createElement('div');
                 notif.style.cssText = 'position:fixed;bottom:20px;right:20px;background:#22C55E;color:white;padding:12px20px;border-radius:10px;z-index:99999;font-size:14px;';
                 notif.innerHTML = `✅ New video "${newVideo.title}" - Google notified!`;
@@ -2047,7 +2239,6 @@ function watchForNewVideos() {
     });
 }
 
-// Start everything
 setTimeout(() => {
     if (typeof db !== 'undefined') {
         generateSitemap();
@@ -2254,7 +2445,6 @@ setTimeout(() => {
                 const messageId = doc.id;
                 let messageHtml = '';
                 
-                // Check if it's a delivery message from admin
                 if (msg.type === 'delivery' && msg.delivery) {
                     const delivery = msg.delivery;
                     const isPaid = delivery.paid || false;
@@ -2276,7 +2466,6 @@ setTimeout(() => {
                         </div>
                     `;
                 } 
-                // Check for product message (type: 'product')
                 else if (msg.type === 'product' && msg.product) {
                     const product = msg.product;
                     messageHtml = `
@@ -2289,7 +2478,6 @@ setTimeout(() => {
                         </div>
                     `;
                 }
-                // Legacy product card format
                 else if (msg.productCard) {
                     messageHtml = `
                         <div class="product-card-in-chat">
@@ -2301,20 +2489,16 @@ setTimeout(() => {
                         </div>
                     `;
                 } 
-                // Image message
                 else if (msg.imageUrl) {
                     messageHtml = `<img src="${msg.imageUrl}" style="max-width:150px; border-radius:8px;">`;
                 } 
-                // Regular text message
                 else if (msg.message) {
                     messageHtml = escapeHtml(msg.message);
                 }
-                // Fallback for any other format
                 else {
                     messageHtml = '';
                 }
                 
-                // Only add to DOM if there's content
                 if (messageHtml) {
                     messagesDiv.innerHTML += `
                         <div class="chat-message ${isAdmin ? 'admin' : 'user'}">
@@ -2328,7 +2512,6 @@ setTimeout(() => {
             });
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
             
-            // Mark messages as read
             snapshot.forEach(async doc => {
                 const msg = doc.data();
                 if (msg.sender === 'admin' && !msg.read) {
@@ -2443,14 +2626,12 @@ setTimeout(() => {
                 </div>
             </div>
         `;
-        // REMOVED the duplicate chat HTML that was here
         
         showScreen('homeScreen');
         loadAdminStatus();
         listenForAdminReplies();
             updateUnreadCount();
         
-        // Start tutorial for first-time users
         setTimeout(() => startTutorial(), 1000);
     }
         
@@ -2464,30 +2645,7 @@ function escapeHtml(text) {
         });
         
          }
-    window.showPaymentComingSoon = function(messageId, price) {
-    // Create a nice modal/popup for payment coming soon
-    const modalHtml = `
-        <div id="paymentComingSoonModal" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; justify-content: center; align-items: center; z-index: 99999;" onclick="this.remove()">
-            <div style="background: white; padding: 30px; border-radius: 24px; max-width: 350px; width: 90%; text-align: center;" onclick="event.stopPropagation()">
-                <span style="font-size: 48px; margin-bottom: 15px; display: block;">💳</span>
-                <h2 style="color: #1E40AF; margin-bottom: 15px;">Payment Coming Soon!</h2>
-                <p style="color: #475569; margin-bottom: 10px;">Amount: <strong style="font-size: 1.3rem; color: #22C55E;">$${price || '0.00'}</strong></p>
-                <p style="color: #64748B; font-size: 0.9rem; margin-bottom: 20px;">We're currently setting up our payment system. Please contact admin to complete your purchase.</p>
-                <div style="display: flex; gap: 10px; justify-content: center;">
-                    <button onclick="document.getElementById('paymentComingSoonModal').remove(); openChatRoom();" style="background: #1E40AF; color: white; border: none; padding: 12px 20px; border-radius: 30px; font-weight: 600; cursor: pointer; flex: 1;">
-                        💬 Chat Admin
-                    </button>
-                    <button onclick="document.getElementById('paymentComingSoonModal').remove()" style="background: #E5E7EB; color: #1E2937; border: none; padding: 12px 20px; border-radius: 30px; font-weight: 600; cursor: pointer; flex: 1;">
-                        Close
-                    </button>
-                </div>
-                <p style="font-size: 0.7rem; color: #94A3B8; margin-top: 15px;">Payment gateway integration in progress</p>
-            </div>
-        </div>
-    `;
     
-    document.body.insertAdjacentHTML('beforeend', modalHtml);
-};
     window.showAuthScreen = showAuthScreen;
     window.showDashboard = showDashboard;
     window.showPrivacyPolicy = showPrivacyPolicy;
@@ -2513,7 +2671,7 @@ function escapeHtml(text) {
     window.sendChatMessage = sendChatMessage;
     window.chatAdminWithProduct = chatAdminWithProduct;
     window.buyNowPrompt = buyNowPrompt;
-            window.copyPromptToClipboard = copyPromptToClipboard;
+    window.copyPromptToClipboard = copyPromptToClipboard;
     window.restartTutorial = restartTutorial;
     
     auth.onAuthStateChanged(user => {
@@ -2525,7 +2683,6 @@ function escapeHtml(text) {
     
     setInterval(loadAdminStatus, 5000);
     
-    // Initialize chat visibility observer when page loads
     document.addEventListener('DOMContentLoaded', function() {
         observeScreenChanges();
     });
