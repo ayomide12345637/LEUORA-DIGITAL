@@ -1,5 +1,5 @@
 // Change this version number whenever you update the app to force an update
-const CACHE_NAME = 'leuora-v1';
+const CACHE_NAME = 'leuora-v2'; // <--- CHANGED TO V2
 const ASSETS_TO_CACHE = [
     '/',
     '/index.html',
@@ -62,10 +62,10 @@ self.addEventListener('push', (event) => {
     const options = {
         body: data.body,
         icon: '/images/icon-192x192.png',
-        badge: '/images/badge.png', // The white silhouette image you created
-        vibrate: [200, 100, 200, 100, 200], // WhatsApp style vibration
+        badge: '/images/badge.png', 
+        vibrate: [200, 100, 200, 100, 200], 
         data: {
-            url: data.url || '/app.html' // Where to go when clicked
+            url: data.url || '/app.html' 
         }
     };
 
@@ -79,7 +79,6 @@ self.addEventListener('notificationclick', (event) => {
     event.notification.close();
     event.waitUntil(
         clients.matchAll({ type: 'window' }).then((clientList) => {
-            // If app is already open, focus it. Otherwise, open a new window.
             for (const client of clientList) {
                 if (client.url === event.notification.data.url && 'focus' in client) {
                     return client.focus();
