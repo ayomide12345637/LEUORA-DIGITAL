@@ -106,9 +106,8 @@
         <!-- Action Buttons -->
         <div class="w-full space-y-4">
             
-            <!-- Install APK Button (Using Raw Link & Download attribute) -->
-            <a href="https://raw.githubusercontent.com/ayomide12345637/LEUORA-DIGITAL/main/LeuoraDigital.apk" 
-               download="LeuoraDigital.apk"
+            <!-- 🚨 NOTICE THE NEW BACKEND LINK HERE 🚨 -->
+            <a href="https://leuora-backend.onrender.com/download" 
                onclick="showInstallModal()" 
                class="flex items-center justify-between w-full bg-leuoraYellow text-leuoraBlue p-4 rounded-2xl shadow-lg hover:bg-yellow-400 transition">
                 <div class="flex items-center">
@@ -183,7 +182,6 @@
 
         // POPUP LOGIC
         function showInstallModal() {
-            // Show the popup while the download happens in the background
             document.getElementById('installModal').classList.add('active');
         }
 
