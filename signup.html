@@ -70,7 +70,6 @@
                 <div class="flex-grow border-t border-gray-300"></div>
             </div>
 
-            <!-- FIXED GOOGLE ICON (SVG) -->
             <button id="googleAuthBtn" class="w-full bg-white border border-gray-300 text-gray-700 font-semibold py-3 rounded-xl hover:bg-gray-50 transition shadow-sm flex items-center justify-center">
                 <svg class="w-5 h-5 mr-3" viewBox="0 0 48 48">
                     <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
@@ -102,7 +101,6 @@
     <script>
         const supabaseUrl = 'https://rmlgvsvvbwoudrosbbpd.supabase.co';
         const supabaseKey = 'sb_publishable_EaVd_ShfJE4L5FKkrXQThA_c56igAp7';
-        // FIXED: Renamed to leuoraDb
         const leuoraDb = supabase.createClient(supabaseUrl, supabaseKey);
 
         const authForm = document.getElementById('authForm');
@@ -165,39 +163,46 @@
 
             try {
                 if (isLoginMode) {
+                    // --- LOGIN MODE ---
                     const { data, error } = await leuoraDb.auth.signInWithPassword({ email, password });
                     if (error) throw error;
                     window.location.href = 'app.html';
                 } else {
+                    // --- SIGNUP MODE ---
                     const fullName = document.getElementById('fullName').value;
                     const gender = document.getElementById('gender').value;
                     const confirmPassword = document.getElementById('confirmPassword').value;
 
                     if (password !== confirmPassword) throw new Error("Passwords do not match!");
 
+                    // 1. Create Auth User
                     const { data: authData, error: authError } = await leuoraDb.auth.signUp({ 
                         email, password, options: { data: { full_name: fullName, gender: gender } }
                     });
                     if (authError) throw authError;
 
+                    // 2. Create Profile in Database
                     if (authData.user) {
                         const { error: profileError } = await leuoraDb
                             .from('profiles')
                             .insert([{ id: authData.user.id, email: email, full_name: fullName, gender: gender, role: 'student' }]);
                         if (profileError) throw profileError;
                     }
+                    
+                    // 3. Wait 1 second to ensure DB saves before redirecting
+                    await new Promise(r => setTimeout(r, 1000));
                     window.location.href = 'app.html';
                 }
             } catch (error) {
                 errorMessage.innerText = error.message;
                 errorMessage.classList.remove('hidden');
-            } finally {
                 submitBtn.disabled = false;
                 btnText.classList.remove('hidden');
                 btnLoader.classList.add('hidden');
             }
         });
 
+        // --- GOOGLE AUTH ---
         document.getElementById('googleAuthBtn').addEventListener('click', async () => {
             const { error } = await leuoraDb.auth.signInWithOAuth({ 
                 provider: 'google', options: { redirectTo: window.location.origin + '/signup.html' }
@@ -206,17 +211,22 @@
         });
 
         leuoraDb.auth.onAuthStateChange(async (event, session) => {
-            if (session) {
+            // Only handle the logic if they just logged in WITH GOOGLE
+            if (event === 'SIGNED_IN' && session) {
                 const user = session.user;
-                const { data: profile } = await leuoraDb.from('profiles').select('gender').eq('id', user.id).single();
+                const provider = user.app_metadata.provider;
+                
+                if (provider === 'google') {
+                    const { data: profile } = await leuoraDb.from('profiles').select('gender').eq('id', user.id).single();
 
-                if (!profile || !profile.gender) {
-                    if (!profile) {
-                        await leuoraDb.from('profiles').insert([{ id: user.id, email: user.email, full_name: user.user_metadata.full_name || 'Student', role: 'student' }]);
+                    if (!profile || !profile.gender) {
+                        if (!profile) {
+                            await leuoraDb.from('profiles').insert([{ id: user.id, email: user.email, full_name: user.user_metadata.full_name || 'Student', role: 'student' }]);
+                        }
+                        document.getElementById('genderModal').classList.remove('hidden');
+                    } else {
+                        window.location.href = 'app.html';
                     }
-                    document.getElementById('genderModal').classList.remove('hidden');
-                } else {
-                    window.location.href = 'app.html';
                 }
             }
         });
