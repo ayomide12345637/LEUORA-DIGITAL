@@ -7,15 +7,11 @@
     <title>Sign Up | Leuora Digital</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
-        tailwind.config = {
-            theme: { extend: { colors: { leuoraBlue: '#1e3a8a', leuoraYellow: '#facc15' } } }
-        }
+        tailwind.config = { theme: { extend: { colors: { leuoraBlue: '#1e3a8a', leuoraYellow: '#facc15' } } } }
     </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <style>
-        body { font-family: 'Inter', sans-serif; }
-    </style>
+    <style> body { font-family: 'Inter', sans-serif; } </style>
 </head>
 <body class="bg-leuoraBlue min-h-screen flex items-center justify-center p-4">
 
@@ -35,7 +31,7 @@
             <form id="authForm" class="space-y-4">
                 <div id="nameField" class="relative">
                     <i class="fa-regular fa-user absolute left-4 top-4 text-gray-400"></i>
-                    <input type="text" id="fullName" placeholder="Full Name" class="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-leuoraBlue focus:bg-white transition" required>
+                    <input type="text" id="fullName" placeholder="Full Name" class="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-leuoraBlue focus:bg-white transition">
                 </div>
                 <div class="relative">
                     <i class="fa-regular fa-envelope absolute left-4 top-4 text-gray-400"></i>
@@ -43,7 +39,7 @@
                 </div>
                 <div id="genderField" class="relative">
                     <i class="fa-solid fa-venus-mars absolute left-4 top-4 text-gray-400"></i>
-                    <select id="gender" class="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-leuoraBlue focus:bg-white transition appearance-none text-gray-700" required>
+                    <select id="gender" class="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-leuoraBlue focus:bg-white transition appearance-none text-gray-700">
                         <option value="" disabled selected>Select Gender</option>
                         <option value="Male">Male</option>
                         <option value="Female">Female</option>
@@ -56,7 +52,7 @@
                 </div>
                 <div id="confirmPasswordField" class="relative">
                     <i class="fa-solid fa-lock absolute left-4 top-4 text-gray-400"></i>
-                    <input type="password" id="confirmPassword" placeholder="Confirm Password" class="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-leuoraBlue focus:bg-white transition" required>
+                    <input type="password" id="confirmPassword" placeholder="Confirm Password" class="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-leuoraBlue focus:bg-white transition">
                 </div>
                 <button type="submit" id="submitBtn" class="w-full bg-leuoraBlue text-white font-bold py-3 rounded-xl hover:bg-blue-900 transition shadow-lg flex justify-center items-center">
                     <span id="btnText">Sign Up</span>
@@ -154,34 +150,53 @@
             e.preventDefault();
             errorMessage.classList.add('hidden');
             
-            const email = document.getElementById('email').value;
+            const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value;
 
+            // --- 1. CLIENT-SIDE VALIDATION (Before touching Supabase) ---
+            if (!isLoginMode) {
+                const fullName = document.getElementById('fullName').value.trim();
+                const gender = document.getElementById('gender').value;
+                const confirmPassword = document.getElementById('confirmPassword').value;
+
+                if (!fullName || !gender) {
+                    errorMessage.innerText = "Please fill in all fields and select a gender.";
+                    errorMessage.classList.remove('hidden');
+                    return; // STOP HERE
+                }
+
+                if (password.length < 6) {
+                    errorMessage.innerText = "Password must be at least 6 characters long.";
+                    errorMessage.classList.remove('hidden');
+                    return; // STOP HERE
+                }
+
+                if (password !== confirmPassword) {
+                    errorMessage.innerText = "Passwords do not match!";
+                    errorMessage.classList.remove('hidden');
+                    return; // STOP HERE
+                }
+            }
+
+            // --- 2. PROCEED TO SUPABASE (Only if everything is correct) ---
             submitBtn.disabled = true;
             btnText.classList.add('hidden');
             btnLoader.classList.remove('hidden');
 
             try {
                 if (isLoginMode) {
-                    // --- LOGIN MODE ---
                     const { data, error } = await leuoraDb.auth.signInWithPassword({ email, password });
                     if (error) throw error;
                     window.location.href = 'app.html';
                 } else {
-                    // --- SIGNUP MODE ---
-                    const fullName = document.getElementById('fullName').value;
+                    const fullName = document.getElementById('fullName').value.trim();
                     const gender = document.getElementById('gender').value;
-                    const confirmPassword = document.getElementById('confirmPassword').value;
 
-                    if (password !== confirmPassword) throw new Error("Passwords do not match!");
-
-                    // 1. Create Auth User
                     const { data: authData, error: authError } = await leuoraDb.auth.signUp({ 
                         email, password, options: { data: { full_name: fullName, gender: gender } }
                     });
                     if (authError) throw authError;
 
-                    // 2. Create Profile in Database
                     if (authData.user) {
                         const { error: profileError } = await leuoraDb
                             .from('profiles')
@@ -189,7 +204,7 @@
                         if (profileError) throw profileError;
                     }
                     
-                    // 3. Wait 1 second to ensure DB saves before redirecting
+                    // Wait 1 second to ensure DB saves before redirecting
                     await new Promise(r => setTimeout(r, 1000));
                     window.location.href = 'app.html';
                 }
@@ -202,7 +217,6 @@
             }
         });
 
-        // --- GOOGLE AUTH ---
         document.getElementById('googleAuthBtn').addEventListener('click', async () => {
             const { error } = await leuoraDb.auth.signInWithOAuth({ 
                 provider: 'google', options: { redirectTo: window.location.origin + '/signup.html' }
@@ -211,7 +225,6 @@
         });
 
         leuoraDb.auth.onAuthStateChange(async (event, session) => {
-            // Only handle the logic if they just logged in WITH GOOGLE
             if (event === 'SIGNED_IN' && session) {
                 const user = session.user;
                 const provider = user.app_metadata.provider;
