@@ -1,0 +1,6 @@
+User-agent: *
+Disallow: /admin.html
+Disallow: /supplier.html
+Disallow: /supplier-dashboard.html
+Disallow: /agreement.html
+Allow: /

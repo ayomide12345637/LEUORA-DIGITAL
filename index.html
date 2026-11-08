@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#1e3a8a"> <!-- Leuora Blue -->
+    
+    <!-- Primary SEO Tags -->
+    <title>Leuora Digital | FUTA Marketplace & Fast Delivery</title>
+    <meta name="description" content="Order food, snacks, gadgets, fashion, and more at FUTA (Federal University of Technology Akure). Fresh food, fast delivery. Order on the web or download the app.">
+    <meta name="keywords" content="FUTA, Leuora Digital, FUTA food, FUTA marketplace, Akure delivery, student marketplace, South Gate, North Gate, West Gate">
+    <meta name="author" content="Leuora Digital">
+    <link rel="canonical" href="https://leuora.xyz/" />
+    
+    <!-- Open Graph / Facebook / WhatsApp Share Preview -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://leuora.xyz/">
+    <meta property="og:title" content="Leuora Digital | FUTA Marketplace">
+    <meta property="og:description" content="Order food, gadgets, and more at FUTA. Fresh food, fast delivery. Download the app or order on the web.">
+    <meta property="og:image" content="https://leuora.xyz/images/hero1.jpg">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://leuora.xyz/">
+    <meta property="twitter:title" content="Leuora Digital | FUTA Marketplace">
+    <meta property="twitter:description" content="Order food, gadgets, and more at FUTA. Fresh food, fast delivery.">
+    <meta property="twitter:image" content="https://leuora.xyz/images/hero1.jpg">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="favicon.png">
+    
+    <!-- PWA Manifest (We will create this file later) -->
+    <link rel="manifest" href="manifest.json">
+
+    <!-- Social Profile Schema (Provided by you) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "Leuora Digital",
+      "url": "https://www.leuora.xyz",
+      "sameAs": [
+        "https://www.facebook.com/share/18JBac47Wx/",
+        "https://www.instagram.com/leuoradigital",
+        "https://www.tiktok.com/@leuore.digital",
+        "https://x.com/leuoradigital",
+        "https://www.youtube.com/@leuoradigital"
+      ]
+    }
+    </script>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        leuoraBlue: '#1e3a8a',
+                        leuoraYellow: '#facc15',
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Smooth fade-in for splash screen effect */
+        .fade-in { animation: fadeIn 1s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="bg-leuoraBlue min-h-screen flex flex-col items-center justify-center p-6 text-white fade-in">
+
+    <!-- Main Container -->
+    <div class="w-full max-w-md flex flex-col items-center text-center">
+        
+        <!-- Logo -->
+        <img src="images/logo.png" alt="Leuora Digital Logo" class="w-28 h-28 mb-4 drop-shadow-lg">
+        
+        <!-- Title & Slogan -->
+        <h1 class="text-4xl font-extrabold mb-2">Leuora Digital</h1>
+        <p class="text-lg text-gray-300 mb-8 font-medium">FUTA's Premier Marketplace</p>
+
+        <!-- Hero Text -->
+        <h2 class="text-2xl font-bold mb-2">Order food <span class="text-leuoraYellow">your way</span></h2>
+        <p class="text-gray-400 mb-8 text-sm">Download the Leuora app or order directly from your browser.</p>
+
+        <!-- Action Buttons -->
+        <div class="w-full space-y-4">
+            
+            <!-- Install APK Button (Yellow) -->
+            <!-- UPDATE THIS LINK LATER WITH YOUR GITHUB APK LINK -->
+            <a href="https://github.com/yourusername/leuora/releases/latest/download/app.apk" class="flex items-center justify-between w-full bg-leuoraYellow text-leuoraBlue p-4 rounded-2xl shadow-lg hover:bg-yellow-400 transition">
+                <div class="flex items-center">
+                    <i class="fa-brands fa-android text-3xl mr-4"></i>
+                    <div class="text-left">
+                        <p class="text-xs font-semibold uppercase tracking-wider opacity-80">Install Now</p>
+                        <p class="text-lg font-bold">Download App</p>
+                    </div>
+                </div>
+                <i class="fa-solid fa-chevron-right text-gray-600"></i>
+            </a>
+
+            <!-- Order on Web Button (White/Blue) -->
+            <a href="app.html" class="flex items-center justify-between w-full bg-white text-leuoraBlue p-4 rounded-2xl shadow-lg hover:bg-gray-50 transition">
+                <div class="flex items-center">
+                    <i class="fa-solid fa-globe text-3xl mr-4"></i>
+                    <div class="text-left">
+                        <p class="text-xs font-semibold uppercase tracking-wider text-gray-500">No download needed</p>
+                        <p class="text-lg font-bold">Order on the Web</p>
+                    </div>
+                </div>
+                <i class="fa-solid fa-chevron-right text-gray-400"></i>
+            </a>
+        </div>
+
+        <!-- QR Code Section -->
+        <div class="mt-10 w-full flex flex-col items-center">
+            <div class="flex items-center w-full mb-6">
+                <div class="flex-grow border-t border-gray-600"></div>
+                <span class="px-4 text-sm text-gray-400 font-medium">or scan to share</span>
+                <div class="flex-grow border-t border-gray-600"></div>
+            </div>
+            
+            <div class="bg-white p-4 rounded-3xl shadow-xl">
+                <!-- Dynamic QR Code API pointing to leuora.xyz -->
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://leuora.xyz&color=1e3a8a" alt="Leuora Digital QR Code" class="w-48 h-48 rounded-lg">
+            </div>
+            <p class="text-gray-400 text-sm mt-4">Scan to open on your phone</p>
+        </div>
+
+        <!-- Printable Flyer Link -->
+        <div class="mt-10 w-full text-center">
+            <a href="flyer.pdf" download class="inline-flex items-center text-gray-300 hover:text-leuoraYellow transition border-b border-gray-500 pb-1">
+                <i class="fa-solid fa-download mr-2"></i> View Printable Flyer
+            </a>
+        </div>
+
+        <!-- Footer -->
+        <footer class="mt-12 mb-6 text-center text-gray-500 text-xs">
+            <div class="flex justify-center space-x-4 mb-4">
+                <a href="https://www.instagram.com/leuoradigital" target="_blank" class="hover:text-white"><i class="fa-brands fa-instagram text-xl"></i></a>
+                <a href="https://x.com/leuoradigital" target="_blank" class="hover:text-white"><i class="fa-brands fa-x-twitter text-xl"></i></a>
+                <a href="https://www.facebook.com/share/18JBac47Wx/" target="_blank" class="hover:text-white"><i class="fa-brands fa-facebook text-xl"></i></a>
+                <a href="https://www.tiktok.com/@leuore.digital" target="_blank" class="hover:text-white"><i class="fa-brands fa-tiktok text-xl"></i></a>
+            </div>
+            <p>&copy; 2026 Leuora Digital. All rights reserved.</p>
+            <p class="mt-1">Built for FUTA Students.</p>
+        </footer>
+
+    </div>
+
+    <!-- Register Service Worker (for PWA and Notifications later) -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js').then(registration => {
+                    console.log('ServiceWorker registration successful');
+                }).catch(err => {
+                    console.log('ServiceWorker registration failed: ', err);
+                });
+            });
+        }
+    </script>
+</body>
+</html>

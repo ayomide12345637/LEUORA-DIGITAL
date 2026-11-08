@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#1e3a8a">
+    <title>Sign Up | Leuora Digital</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: { extend: { colors: { leuoraBlue: '#1e3a8a', leuoraYellow: '#facc15' } } }
+        }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-leuoraBlue min-h-screen flex items-center justify-center p-4">
+
+    <div class="bg-white w-full max-w-md rounded-3xl shadow-2xl overflow-hidden relative">
+        <div class="bg-leuoraBlue p-6 flex flex-col items-center justify-center relative">
+            <a href="index.html" class="absolute left-4 top-6 text-white hover:text-leuoraYellow transition">
+                <i class="fa-solid fa-arrow-left text-xl"></i>
+            </a>
+            <img src="images/logo.png" alt="Leuora" class="w-16 h-16 mb-2" onerror="this.src='https://placehold.co/100x100?text=L'">
+            <h2 id="pageTitle" class="text-2xl font-bold text-white">Create an Account</h2>
+            <p id="pageSubtitle" class="text-gray-300 text-sm mt-1">Join FUTA's Premier Marketplace</p>
+        </div>
+
+        <div class="p-6">
+            <div id="errorMessage" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4 text-sm"></div>
+
+            <form id="authForm" class="space-y-4">
+                <div id="nameField" class="relative">
+                    <i class="fa-regular fa-user absolute left-4 top-4 text-gray-400"></i>
+                    <input type="text" id="fullName" placeholder="Full Name" class="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-leuoraBlue focus:bg-white transition" required>
+                </div>
+                <div class="relative">
+                    <i class="fa-regular fa-envelope absolute left-4 top-4 text-gray-400"></i>
+                    <input type="email" id="email" placeholder="Email Address" class="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-leuoraBlue focus:bg-white transition" required>
+                </div>
+                <div id="genderField" class="relative">
+                    <i class="fa-solid fa-venus-mars absolute left-4 top-4 text-gray-400"></i>
+                    <select id="gender" class="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-leuoraBlue focus:bg-white transition appearance-none text-gray-700" required>
+                        <option value="" disabled selected>Select Gender</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                    </select>
+                    <i class="fa-solid fa-chevron-down absolute right-4 top-4 text-gray-400 pointer-events-none"></i>
+                </div>
+                <div class="relative">
+                    <i class="fa-solid fa-lock absolute left-4 top-4 text-gray-400"></i>
+                    <input type="password" id="password" placeholder="Password" class="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-leuoraBlue focus:bg-white transition" required>
+                </div>
+                <div id="confirmPasswordField" class="relative">
+                    <i class="fa-solid fa-lock absolute left-4 top-4 text-gray-400"></i>
+                    <input type="password" id="confirmPassword" placeholder="Confirm Password" class="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-leuoraBlue focus:bg-white transition" required>
+                </div>
+                <button type="submit" id="submitBtn" class="w-full bg-leuoraBlue text-white font-bold py-3 rounded-xl hover:bg-blue-900 transition shadow-lg flex justify-center items-center">
+                    <span id="btnText">Sign Up</span>
+                    <i id="btnLoader" class="hidden fa-solid fa-circle-notch fa-spin ml-2"></i>
+                </button>
+            </form>
+
+            <div class="flex items-center my-6">
+                <div class="flex-grow border-t border-gray-300"></div>
+                <span class="px-4 text-gray-400 text-sm">Or continue with</span>
+                <div class="flex-grow border-t border-gray-300"></div>
+            </div>
+
+            <!-- FIXED GOOGLE ICON (SVG) -->
+            <button id="googleAuthBtn" class="w-full bg-white border border-gray-300 text-gray-700 font-semibold py-3 rounded-xl hover:bg-gray-50 transition shadow-sm flex items-center justify-center">
+                <svg class="w-5 h-5 mr-3" viewBox="0 0 48 48">
+                    <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+                    <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+                    <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+                    <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+                </svg>
+                Google
+            </button>
+
+            <p class="text-center text-gray-600 text-sm mt-6">
+                <span id="toggleText">Already have an account?</span> 
+                <a href="#" id="toggleLink" class="text-leuoraBlue font-bold hover:underline">Login here</a>
+            </p>
+        </div>
+    </div>
+
+    <div id="genderModal" class="hidden fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-2xl p-6 w-full max-w-sm text-center">
+            <h3 class="text-xl font-bold text-leuoraBlue mb-2">One last thing!</h3>
+            <p class="text-gray-600 mb-6">Since you signed in with Google, please select your gender so we can personalize your experience.</p>
+            <div class="flex justify-center space-x-4 mb-6">
+                <button onclick="saveGoogleGender('Male')" class="bg-blue-50 text-leuoraBlue border-2 border-leuoraBlue font-bold py-3 px-8 rounded-xl hover:bg-leuoraBlue hover:text-white transition">Male</button>
+                <button onclick="saveGoogleGender('Female')" class="bg-yellow-50 text-yellow-600 border-2 border-leuoraYellow font-bold py-3 px-8 rounded-xl hover:bg-leuoraYellow hover:text-leuoraBlue transition">Female</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const supabaseUrl = 'https://rmlgvsvvbwoudrosbbpd.supabase.co';
+        const supabaseKey = 'sb_publishable_EaVd_ShfJE4L5FKkrXQThA_c56igAp7';
+        // FIXED: Renamed to leuoraDb
+        const leuoraDb = supabase.createClient(supabaseUrl, supabaseKey);
+
+        const authForm = document.getElementById('authForm');
+        const pageTitle = document.getElementById('pageTitle');
+        const pageSubtitle = document.getElementById('pageSubtitle');
+        const nameField = document.getElementById('nameField');
+        const genderField = document.getElementById('genderField');
+        const confirmPasswordField = document.getElementById('confirmPasswordField');
+        const toggleText = document.getElementById('toggleText');
+        const toggleLink = document.getElementById('toggleLink');
+        const errorMessage = document.getElementById('errorMessage');
+        const submitBtn = document.getElementById('submitBtn');
+        const btnText = document.getElementById('btnText');
+        const btnLoader = document.getElementById('btnLoader');
+        
+        let isLoginMode = false;
+
+        toggleLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            isLoginMode = !isLoginMode;
+            errorMessage.classList.add('hidden');
+
+            if (isLoginMode) {
+                pageTitle.innerText = "Welcome Back";
+                pageSubtitle.innerText = "Login to continue shopping";
+                nameField.classList.add('hidden');
+                genderField.classList.add('hidden');
+                confirmPasswordField.classList.add('hidden');
+                btnText.innerText = "Login";
+                toggleText.innerText = "Don't have an account?";
+                toggleLink.innerText = "Sign Up here";
+                document.getElementById('fullName').required = false;
+                document.getElementById('gender').required = false;
+                document.getElementById('confirmPassword').required = false;
+            } else {
+                pageTitle.innerText = "Create an Account";
+                pageSubtitle.innerText = "Join FUTA's Premier Marketplace";
+                nameField.classList.remove('hidden');
+                genderField.classList.remove('hidden');
+                confirmPasswordField.classList.remove('hidden');
+                btnText.innerText = "Sign Up";
+                toggleText.innerText = "Already have an account?";
+                toggleLink.innerText = "Login here";
+                document.getElementById('fullName').required = true;
+                document.getElementById('gender').required = true;
+                document.getElementById('confirmPassword').required = true;
+            }
+        });
+
+        authForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            errorMessage.classList.add('hidden');
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            submitBtn.disabled = true;
+            btnText.classList.add('hidden');
+            btnLoader.classList.remove('hidden');
+
+            try {
+                if (isLoginMode) {
+                    const { data, error } = await leuoraDb.auth.signInWithPassword({ email, password });
+                    if (error) throw error;
+                    window.location.href = 'app.html';
+                } else {
+                    const fullName = document.getElementById('fullName').value;
+                    const gender = document.getElementById('gender').value;
+                    const confirmPassword = document.getElementById('confirmPassword').value;
+
+                    if (password !== confirmPassword) throw new Error("Passwords do not match!");
+
+                    const { data: authData, error: authError } = await leuoraDb.auth.signUp({ 
+                        email, password, options: { data: { full_name: fullName, gender: gender } }
+                    });
+                    if (authError) throw authError;
+
+                    if (authData.user) {
+                        const { error: profileError } = await leuoraDb
+                            .from('profiles')
+                            .insert([{ id: authData.user.id, email: email, full_name: fullName, gender: gender, role: 'student' }]);
+                        if (profileError) throw profileError;
+                    }
+                    window.location.href = 'app.html';
+                }
+            } catch (error) {
+                errorMessage.innerText = error.message;
+                errorMessage.classList.remove('hidden');
+            } finally {
+                submitBtn.disabled = false;
+                btnText.classList.remove('hidden');
+                btnLoader.classList.add('hidden');
+            }
+        });
+
+        document.getElementById('googleAuthBtn').addEventListener('click', async () => {
+            const { error } = await leuoraDb.auth.signInWithOAuth({ 
+                provider: 'google', options: { redirectTo: window.location.origin + '/signup.html' }
+            });
+            if (error) alert(error.message);
+        });
+
+        leuoraDb.auth.onAuthStateChange(async (event, session) => {
+            if (session) {
+                const user = session.user;
+                const { data: profile } = await leuoraDb.from('profiles').select('gender').eq('id', user.id).single();
+
+                if (!profile || !profile.gender) {
+                    if (!profile) {
+                        await leuoraDb.from('profiles').insert([{ id: user.id, email: user.email, full_name: user.user_metadata.full_name || 'Student', role: 'student' }]);
+                    }
+                    document.getElementById('genderModal').classList.remove('hidden');
+                } else {
+                    window.location.href = 'app.html';
+                }
+            }
+        });
+
+        async function saveGoogleGender(selectedGender) {
+            const { data: { user } } = await leuoraDb.auth.getUser();
+            if (user) {
+                const { error } = await leuoraDb.from('profiles').update({ gender: selectedGender }).eq('id', user.id);
+                if (!error) window.location.href = 'app.html';
+                else alert("Error saving gender: " + error.message);
+            }
+        }
+    </script>
+</body>
+</html>

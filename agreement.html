@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Supplier Agreement | Leuora Digital</title>
+    <meta name="robots" content="noindex, nofollow">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: { extend: { colors: { leuoraBlue: '#1e3a8a', leuoraYellow: '#facc15' } } }
+        }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- HTML to PDF Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .hidden-view { display: none; }
+        
+        /* PDF Specific Styles */
+        #pdf-content {
+            font-family: 'Times New Roman', Times, serif;
+            color: #000;
+            line-height: 1.6;
+        }
+        .pdf-page {
+            width: 210mm;
+            min-height: 297mm;
+            padding: 20mm;
+            margin: auto;
+            background: white;
+        }
+        .signature-img {
+            max-height: 60px;
+            object-fit: contain;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+
+    <!-- Header -->
+    <header class="bg-leuoraBlue text-white p-4 shadow-md sticky top-0 z-50 flex items-center">
+        <a href="index.html" class="mr-4 hover:text-leuoraYellow"><i class="fa-solid fa-arrow-left text-xl"></i></a>
+        <img src="images/logo.png" alt="Leuora" class="h-8 mr-3" onerror="this.style.display='none'">
+        <h1 class="font-bold text-lg">Supplier Agreement</h1>
+    </header>
+
+    <!-- ========================================== -->
+    <!-- VIEW 1: TERMS & CONDITIONS -->
+    <!-- ========================================== -->
+    <main id="termsView" class="p-4 max-w-2xl mx-auto mt-4 pb-20">
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+            <h2 class="text-2xl font-bold text-leuoraBlue mb-4 text-center">Leuora Digital Supplier Terms</h2>
+            
+            <div class="text-gray-700 text-sm space-y-4 leading-relaxed h-96 overflow-y-auto pr-2 border p-4 rounded-lg bg-gray-50">
+                <p><strong>1. Introduction:</strong> Welcome to Leuora Digital. By registering as a supplier, you agree to abide by the rules and regulations set forth by Leuora Digital and the Federal University of Technology Akure (FUTA) campus guidelines.</p>
+                
+                <p><strong>2. Platform Role:</strong> Leuora Digital acts as a marketplace connecting students (buyers) with vendors (suppliers). We facilitate payments and order routing but are not directly responsible for the quality of goods provided, though we enforce strict quality control.</p>
+                
+                <p><strong>3. Commissions & Pricing:</strong> Suppliers will list their base price. Leuora Digital reserves the right to add a markup to this base price to cover platform maintenance, marketing, and logistics. The final selling price will be determined and displayed by the Admin.</p>
+                
+                <p><strong>4. Payouts:</strong> Payments are processed via Flutterwave. Supplier earnings will be automatically settled to the bank account provided during registration, minus the agreed platform fee. A standard transport fee of ₦500 applies to all orders unless stated otherwise.</p>
+                
+                <p><strong>5. Fulfillment:</strong> Once an order is confirmed by the Admin via WhatsApp, the supplier must prepare the item for pickup promptly at the designated campus gate (North, South, or West Gate). Delays will negatively impact your supplier rating.</p>
+                
+                <p><strong>6. Rejections & Returns:</strong> If a product is consistently rejected due to poor quality, expired dates, or mismatch with description, Leuora Digital reserves the right to suspend or permanently ban the supplier.</p>
+                
+                <p><strong>7. Registration Fee:</strong> A one-time, non-refundable fee of ₦1,000 is required to become a verified supplier. This fee covers background checks and setup.</p>
+                
+                <p><strong>8. Data Privacy:</strong> Your business data, bank details, and contact information will be kept strictly confidential and will only be used for order fulfillment and payouts.</p>
+            </div>
+
+            <div class="mt-8">
+                <button onclick="showForm()" class="w-full bg-leuoraBlue text-white font-bold py-4 rounded-xl shadow-lg hover:bg-blue-900 transition flex items-center justify-center">
+                    <i class="fa-solid fa-file-signature mr-2"></i> Proceed to Sign Agreement
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- ========================================== -->
+    <!-- VIEW 2: SIGNATURE FORM -->
+    <!-- ========================================== -->
+    <main id="formView" class="hidden-view p-4 max-w-2xl mx-auto mt-4 pb-20">
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+            <h2 class="text-xl font-bold text-gray-800 mb-2">Complete Your Agreement</h2>
+            <p class="text-sm text-gray-500 mb-6">Please fill out your business details and upload a photo of your signature on a white paper.</p>
+
+            <form id="agreementForm">
+                <div class="space-y-4 mb-6">
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Business Name</label>
+                        <input type="text" id="bizName" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-leuoraBlue" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Email Address</label>
+                        <input type="email" id="bizEmail" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-leuoraBlue" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Phone Number</label>
+                        <input type="tel" id="bizPhone" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-leuoraBlue" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Upload Signature (On white paper)</label>
+                        <input type="file" id="signatureUpload" accept="image/*" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-leuoraBlue hover:file:bg-blue-100" required>
+                    </div>
+                </div>
+
+                <button type="button" onclick="generatePDF()" id="generateBtn" class="w-full bg-leuoraYellow text-leuoraBlue font-bold py-4 rounded-xl shadow-lg hover:bg-yellow-400 transition flex items-center justify-center">
+                    <i class="fa-solid fa-download mr-2"></i> Generate & Download PDF
+                </button>
+            </form>
+        </div>
+    </main>
+
+    <!-- ========================================== -->
+    <!-- HIDDEN PDF TEMPLATE (Used by html2pdf) -->
+    <!-- ========================================== -->
+    <div class="hidden-view">
+        <div id="pdf-content" class="bg-white text-black">
+            <!-- Header -->
+            <div class="flex justify-between items-center border-b-2 border-gray-800 pb-4 mb-6">
+                <div>
+                    <h1 class="text-2xl font-bold uppercase tracking-wider">Supplier Agreement</h1>
+                    <p class="text-sm">Leuora Digital Marketplace</p>
+                </div>
+                <img src="images/logo.png" alt="Logo" style="height: 60px;" onerror="this.style.display='none'">
+            </div>
+
+            <!-- Content -->
+            <p class="mb-4">This agreement is entered into by and between <strong>Leuora Digital</strong> ("The Platform") and <strong><span id="pdfBizName"></span></strong> ("The Supplier").</p>
+            
+            <p class="mb-4">By signing below, the Supplier agrees to the following terms:</p>
+            <ul class="list-disc pl-6 mb-6 space-y-2">
+                <li>The Supplier will provide accurate product descriptions and maintain high-quality standards.</li>
+                <li>The Supplier agrees to a platform markup on all products sold.</li>
+                <li>The Supplier must fulfill orders promptly when contacted via WhatsApp by the Admin.</li>
+                <li>A one-time registration fee of ₦1,000 has been paid.</li>
+                <li>Payouts will be processed via the bank details provided during registration.</li>
+                <li>Leuora Digital reserves the right to terminate this agreement if rules are violated.</li>
+            </ul>
+
+            <div class="mb-8">
+                <p><strong>Supplier Email:</strong> <span id="pdfBizEmail"></span></p>
+                <p><strong>Supplier Phone:</strong> <span id="pdfBizPhone"></span></p>
+                <p><strong>Date:</strong> <span id="pdfDate"></span></p>
+            </div>
+
+            <!-- Signatures -->
+            <div class="flex justify-between mt-16 pt-8 border-t border-gray-300">
+                <div class="w-1/2">
+                    <p class="mb-2 font-bold text-sm">Supplier Signature:</p>
+                    <img id="pdfSupplierSignature" src="" alt="Supplier Signature" class="signature-img mb-2 border-b border-gray-400 pb-1">
+                    <p class="text-sm" id="pdfSupplierName"></p>
+                </div>
+                <div class="w-1/2 pl-8">
+                    <p class="mb-2 font-bold text-sm">For Leuora Digital:</p>
+                    <!-- Admin Signature Placeholder -->
+                    <img src="images/signature.png" alt="Admin Signature" class="signature-img mb-2 border-b border-gray-400 pb-1" onerror="this.src='https://placehold.co/150x50?text=Admin+Signature'">
+                    <p class="text-sm">Authorized Representative</p>
+                </div>
+            </div>
+            
+            <div class="mt-12 text-center text-xs text-gray-500">
+                <p>This document was electronically generated by Leuora Digital. Valid without a physical stamp.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- App Logic -->
+    <script>
+        function showForm() {
+            document.getElementById('termsView').classList.add('hidden-view');
+            document.getElementById('formView').classList.remove('hidden-view');
+            window.scrollTo(0, 0);
+        }
+
+        function generatePDF() {
+            const bizName = document.getElementById('bizName').value;
+            const bizEmail = document.getElementById('bizEmail').value;
+            const bizPhone = document.getElementById('bizPhone').value;
+            const fileInput = document.getElementById('signatureUpload');
+
+            if (!fileInput.files[0]) {
+                alert("Please upload your signature image.");
+                return;
+            }
+
+            // Populate PDF Template
+            document.getElementById('pdfBizName').innerText = bizName;
+            document.getElementById('pdfBizEmail').innerText = bizEmail;
+            document.getElementById('pdfBizPhone').innerText = bizPhone;
+            document.getElementById('pdfSupplierName').innerText = bizName;
+            
+            const date = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+            document.getElementById('pdfDate').innerText = date;
+
+            // Handle Signature Image Preview
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('pdfSupplierSignature').src = e.target.result;
+                
+                // Trigger PDF Generation after image is loaded into template
+                setTimeout(() => {
+                    const element = document.getElementById('pdf-content');
+                    const opt = {
+                        margin: 0,
+                        filename: `Leuora_Agreement_${bizName.replace(/\s+/g, '_')}.pdf`,
+                        image: { type: 'jpeg', quality: 0.98 },
+                        html2canvas: { scale: 2 },
+                        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                    };
+
+                    // Change button state
+                    const btn = document.getElementById('generateBtn');
+                    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> Generating PDF...';
+                    btn.disabled = true;
+
+                    // Generate and Download
+                    html2pdf().set(opt).from(element).save().then(() => {
+                        btn.innerHTML = '<i class="fa-solid fa-check mr-2"></i> Downloaded! Proceeding...';
+                        btn.classList.replace('bg-leuoraYellow', 'bg-green-500');
+                        btn.classList.replace('text-leuoraBlue', 'text-white');
+                        
+                        // Redirect to supplier signup
+                        setTimeout(() => {
+                            window.location.href = 'supplier.html';
+                        }, 2000);
+                    });
+                }, 500);
+            };
+            reader.readAsDataURL(fileInput.files[0]);
+        }
+    </script>
+</body>
+</html>

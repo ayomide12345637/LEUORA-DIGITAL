@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#1e3a8a">
+    <title>Product | Leuora Digital</title>
+    <meta property="og:title" id="ogTitle" content="Leuora Digital Product">
+    <meta property="og:description" id="ogDescription" content="Check out this product on Leuora Digital!">
+    <meta property="og:image" id="ogImage" content="https://leuora.xyz/images/logo.png">
+    <meta property="og:url" id="ogUrl" content="https://leuora.xyz/">
+    <meta property="og:type" content="product">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { theme: { extend: { colors: { leuoraBlue: '#1e3a8a', leuoraYellow: '#facc15' } } } }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }</style>
+</head>
+<body class="bg-gray-50 font-sans pb-24">
+    <header class="bg-white sticky top-0 z-30 shadow-sm">
+        <div class="flex items-center justify-between px-4 py-3">
+            <button onclick="window.history.back()" class="text-gray-700 text-xl w-8"><i class="fa-solid fa-arrow-left"></i></button>
+            <h1 class="font-bold text-leuoraBlue text-lg flex-1 text-center pr-8">Product Details</h1>
+        </div>
+    </header>
+
+    <main id="productContent" class="max-w-md mx-auto">
+        <div id="loadingState" class="flex flex-col items-center justify-center h-64"><i class="fa-solid fa-circle-notch fa-spin text-4xl text-leuoraBlue mb-4"></i><p class="text-gray-500">Loading product...</p></div>
+        <div id="errorState" class="hidden flex-col items-center justify-center h-64 px-4 text-center"><i class="fa-solid fa-box-open text-5xl text-gray-300 mb-4"></i><h2 class="text-xl font-bold text-gray-700 mb-2">Product Not Found</h2><p class="text-gray-500 mb-6">The product you are looking for doesn't exist or has been removed.</p><a href="app.html" class="bg-leuoraBlue text-white px-6 py-2 rounded-full font-bold">Back to Shop</a></div>
+        
+        <div id="productDetails" class="hidden">
+            <div class="relative w-full aspect-square bg-white">
+                <img id="productImage" src="" alt="Product Image" class="w-full h-full object-cover">
+                <span id="productTag" class="absolute top-4 left-4 bg-orange-500 text-white text-xs font-bold px-3 py-1 rounded-full hidden"></span>
+            </div>
+            <div class="bg-white p-5 rounded-t-3xl -mt-6 relative z-10 shadow-lg">
+                <div class="flex justify-between items-start mb-2">
+                    <div><p id="productCategory" class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Category</p><h1 id="productTitle" class="text-2xl font-bold text-gray-800 leading-tight">Product Title</h1></div>
+                    <button onclick="shareProduct()" class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-leuoraBlue hover:bg-gray-200 transition"><i class="fa-solid fa-share-nodes"></i></button>
+                </div>
+                <div id="priceContainer" class="mt-4"></div>
+                <hr class="my-5 border-gray-100">
+                <h3 class="font-bold text-gray-800 mb-2">Product Description</h3>
+                <p id="productDescription" class="text-gray-600 text-sm leading-relaxed mb-6">Loading description...</p>
+                <div class="bg-gray-50 p-4 rounded-2xl flex items-center justify-between mt-6">
+                    <div class="flex items-center">
+                        <div class="w-10 h-10 bg-leuoraBlue rounded-full flex items-center justify-center text-white font-bold mr-3"><i class="fa-solid fa-store"></i></div>
+                        <div><p class="text-xs text-gray-500">Sold by</p><p id="vendorName" class="font-bold text-gray-800 text-sm">Verified Vendor</p></div>
+                    </div>
+                    <span class="text-green-500 text-xl"><i class="fa-solid fa-circle-check"></i></span>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="actionBar" class="hidden fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 p-4 flex items-center justify-between z-40 max-w-md mx-auto right-0 shadow-2xl">
+        <div id="bottomPriceDisplay" class="flex flex-col"><span class="text-xs text-gray-500">Total Price</span><span id="bottomPrice" class="font-bold text-xl text-leuoraBlue">₦0</span></div>
+        <button id="addToCartBtn" onclick="handleAddToCart()" class="bg-leuoraBlue text-white font-bold py-3 px-8 rounded-xl shadow-lg hover:bg-blue-900 transition flex items-center"><i class="fa-solid fa-cart-plus mr-2"></i> Add to Cart</button>
+        <a id="askVendorBtn" href="https://wa.me/2348167914665" target="_blank" class="hidden bg-green-500 text-white font-bold py-3 px-6 rounded-xl shadow-lg hover:bg-green-600 transition flex items-center justify-center w-full max-w-[200px]"><i class="fa-brands fa-whatsapp mr-2 text-xl"></i> Ask Vendor</a>
+    </div>
+
+    <script>
+        // FIXED: Renamed to leuoraDb
+        const supabaseUrl = 'https://rmlgvsvvbwoudrosbbpd.supabase.co';
+        const supabaseKey = 'sb_publishable_EaVd_ShfJE4L5FKkrXQThA_c56igAp7';
+        const leuoraDb = supabase.createClient(supabaseUrl, supabaseKey);
+        let currentProduct = null;
+
+        async function loadProduct() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const productId = urlParams.get('id');
+            if (!productId) { showError(); return; }
+            const { data: product, error } = await leuoraDb.from('products').select(`*, suppliers ( business_name )`).eq('id', productId).single();
+            if (error || !product) { showError(); return; }
+            currentProduct = product; renderProduct(product);
+        }
+
+        function renderProduct(product) {
+            document.getElementById('loadingState').classList.add('hidden');
+            document.getElementById('productDetails').classList.remove('hidden');
+            document.getElementById('actionBar').classList.remove('hidden');
+            
+            const title = product.title || 'Product Title';
+            const imgUrl = product.image_url || 'https://placehold.co/600x600?text=No+Image';
+            const description = product.description || 'No description provided for this product.';
+            const category = product.category || 'General';
+            const isClothing = category === 'Clothing';
+
+            document.getElementById('productImage').src = imgUrl;
+            document.getElementById('productTitle').innerText = title;
+            document.getElementById('productCategory').innerText = category;
+            document.getElementById('productDescription').innerText = description;
+
+            if (product.suppliers && product.suppliers.business_name) document.getElementById('vendorName').innerText = product.suppliers.business_name;
+            else document.getElementById('vendorName').innerText = "Leuora Partner";
+
+            if (product.is_flash_deal) {
+                const tag = document.getElementById('productTag'); tag.innerText = "🔥 Flash Deal"; tag.classList.remove('hidden');
+            } else if (product.is_trending) {
+                const tag = document.getElementById('productTag'); tag.innerText = "📈 Trending"; tag.classList.remove('hidden'); tag.classList.replace('bg-orange-500', 'bg-leuoraBlue');
+            }
+
+            const priceContainer = document.getElementById('priceContainer');
+            const bottomPriceDisplay = document.getElementById('bottomPriceDisplay');
+            const addToCartBtn = document.getElementById('addToCartBtn');
+            const askVendorBtn = document.getElementById('askVendorBtn');
+
+            if (isClothing) {
+                priceContainer.innerHTML = `<span class="text-lg font-bold text-orange-500">Price on Request</span>`;
+                bottomPriceDisplay.classList.add('hidden');
+                addToCartBtn.classList.add('hidden');
+                askVendorBtn.classList.remove('hidden');
+                document.getElementById('productDescription').innerText = description + "\n\n(Note: For clothing, you will need to chat with the vendor for exact sizing, availability, and price.)";
+            } else {
+                const price = product.admin_price || 0;
+                priceContainer.innerHTML = `<span class="text-3xl font-extrabold text-leuoraBlue">₦${price.toLocaleString()}</span>`;
+                document.getElementById('bottomPrice').innerText = '₦' + price.toLocaleString();
+            }
+
+            document.title = `${title} | Leuora Digital`;
+            document.getElementById('ogTitle').setAttribute('content', title);
+            document.getElementById('ogDescription').setAttribute('content', description.substring(0, 100) + '...');
+            document.getElementById('ogImage').setAttribute('content', imgUrl);
+            document.getElementById('ogUrl').setAttribute('content', `https://leuora.xyz/product.html?id=${product.id}`);
+        }
+
+        function showError() {
+            document.getElementById('loadingState').classList.add('hidden');
+            document.getElementById('errorState').classList.remove('hidden');
+            document.getElementById('errorState').classList.add('flex');
+        }
+
+        function handleAddToCart() {
+            if (!currentProduct) return;
+            let cart = JSON.parse(localStorage.getItem('leuoraCart')) || [];
+            const isClothing = currentProduct.category === 'Clothing';
+            const price = currentProduct.admin_price || 0;
+            cart.push({ name: currentProduct.title, price: price, isQuote: isClothing, qty: 1 });
+            localStorage.setItem('leuoraCart', JSON.stringify(cart));
+            const toast = document.createElement('div');
+            toast.className = 'fixed top-20 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-6 py-3 rounded-full z-50 text-sm font-bold shadow-lg';
+            toast.innerText = 'Added to cart! Redirecting...';
+            document.body.appendChild(toast);
+            setTimeout(() => { window.location.href = 'app.html'; }, 1000);
+        }
+
+        function shareProduct() {
+            if (!currentProduct) return;
+            const isClothing = currentProduct.category === 'Clothing';
+            const priceText = isClothing ? 'Price on Request' : `₦${currentProduct.admin_price.toLocaleString()}`;
+            const shareUrl = `https://leuora.xyz/product.html?id=${currentProduct.id}`;
+            const shareData = { title: currentProduct.title, text: `Check out ${currentProduct.title} on Leuora Digital for ${priceText}!\n\nOrder here: ${shareUrl}`, url: shareUrl };
+            if (navigator.share) navigator.share(shareData).catch(console.error);
+            else { navigator.clipboard.writeText(shareData.text); alert("Link copied to clipboard!"); }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadProduct);
+    </script>
+</body>
+</html>

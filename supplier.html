@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Supplier Portal | Leuora Digital</title>
+    <meta name="robots" content="noindex, nofollow">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { theme: { extend: { colors: { leuoraBlue: '#1e3a8a', leuoraYellow: '#facc15' } } } }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://checkout.flutterwave.com/v3.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .view-section { display: none; }
+        .view-section.active { display: block; animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col">
+
+    <header class="bg-leuoraBlue text-white p-4 shadow-md flex items-center justify-between">
+        <div class="flex items-center">
+            <a href="index.html" class="mr-4 hover:text-leuoraYellow"><i class="fa-solid fa-arrow-left text-xl"></i></a>
+            <img src="images/logo.png" alt="Leuora" class="h-8 mr-3" onerror="this.style.display='none'">
+            <h1 class="font-bold text-lg">Supplier Portal</h1>
+        </div>
+    </header>
+
+    <main class="flex-1 flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-md rounded-3xl shadow-xl overflow-hidden">
+            <div class="flex border-b border-gray-200">
+                <button onclick="switchTab('login')" id="tab-login" class="flex-1 py-4 font-bold text-gray-500 hover:text-leuoraBlue transition">Login</button>
+                <button onclick="switchTab('signup')" id="tab-signup" class="flex-1 py-4 font-bold text-leuoraBlue border-b-2 border-leuoraBlue bg-blue-50 transition">Sign Up</button>
+            </div>
+            <div id="alertMessage" class="hidden mx-6 mt-4 p-3 rounded-lg text-sm text-center"></div>
+
+            <div id="view-login" class="view-section p-6">
+                <h2 class="text-xl font-bold text-gray-800 mb-6 text-center">Welcome Back</h2>
+                <form id="loginForm">
+                    <div class="relative mb-4"><i class="fa-regular fa-envelope absolute left-4 top-4 text-gray-400"></i><input type="email" id="loginEmail" placeholder="Email Address" class="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-leuoraBlue" required></div>
+                    <div class="relative mb-6"><i class="fa-solid fa-lock absolute left-4 top-4 text-gray-400"></i><input type="password" id="loginPassword" placeholder="Password" class="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-leuoraBlue" required></div>
+                    <button type="submit" class="w-full bg-leuoraBlue text-white font-bold py-3 rounded-xl shadow-lg hover:bg-blue-900 transition">Login to Dashboard</button>
+                </form>
+            </div>
+
+            <div id="view-signup" class="view-section active p-6">
+                <h2 class="text-xl font-bold text-gray-800 mb-2 text-center">Become a Supplier</h2>
+                <p class="text-xs text-gray-500 text-center mb-6">Registration fee: <strong>₦1,000</strong> (One-time)</p>
+                <form id="signupForm">
+                    <div class="space-y-4 mb-6 max-h-96 overflow-y-auto pr-2">
+                        <div><label class="block text-xs font-bold text-gray-600 mb-1">Business Name</label><input type="text" id="bizName" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-leuoraBlue" required></div>
+                        <div><label class="block text-xs font-bold text-gray-600 mb-1">Email Address (Gmail)</label><input type="email" id="bizEmail" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-leuoraBlue" required></div>
+                        <div><label class="block text-xs font-bold text-gray-600 mb-1">Password</label><input type="password" id="bizPassword" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-leuoraBlue" required minlength="6"></div>
+                        <div><label class="block text-xs font-bold text-gray-600 mb-1">Phone Number</label><input type="tel" id="bizPhone" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-leuoraBlue" required></div>
+                        <div><label class="block text-xs font-bold text-gray-600 mb-1">WhatsApp Number</label><input type="tel" id="bizWhatsapp" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-leuoraBlue" required></div>
+                        <div class="pt-2 border-t border-gray-100">
+                            <p class="text-xs font-bold text-leuoraBlue mb-2">Payout Bank Details</p>
+                            <div class="space-y-3">
+                                <input type="text" id="bankName" placeholder="Bank Name" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-leuoraBlue" required>
+                                <input type="text" id="accountNumber" placeholder="Account Number" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-leuoraBlue" required>
+                                <input type="text" id="accountName" placeholder="Account Name" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-leuoraBlue" required>
+                            </div>
+                        </div>
+                        <div class="pt-2 border-t border-gray-100">
+                            <label class="block text-xs font-bold text-gray-600 mb-1">Primary Category (You can add more later)</label>
+                            <select id="bizCategory" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-leuoraBlue" required>
+                                <option value="" disabled selected>Select your main category</option>
+                                <option value="Food stuff">Food stuff</option><option value="Snacks">Snacks</option><option value="Frozen food">Frozen food</option><option value="Cake">Cake</option><option value="Clothing">Clothing</option><option value="Fashion">Fashion</option><option value="Skincare">Skincare</option><option value="Content creation">Content creation</option><option value="Transport">Transport</option><option value="Gift vendor">Gift vendor</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit" id="signupBtn" class="w-full bg-leuoraYellow text-leuoraBlue font-bold py-3 rounded-xl shadow-lg hover:bg-yellow-400 transition flex justify-center items-center"><span id="btnText">Pay ₦1,000 & Register</span><i id="btnSpinner" class="hidden fa-solid fa-circle-notch fa-spin ml-2"></i></button>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // FIXED: Renamed to leuoraDb
+        const supabaseUrl = 'https://rmlgvsvvbwoudrosbbpd.supabase.co';
+        const supabaseKey = 'sb_publishable_EaVd_ShfJE4L5FKkrXQThA_c56igAp7';
+        const leuoraDb = supabase.createClient(supabaseUrl, supabaseKey);
+        const FLW_PUBLIC_KEY = "FLWPUBK-8ec47505341e1bbaff2a67cf31c7a304-X";
+
+        const alertMessage = document.getElementById('alertMessage');
+        const tabLogin = document.getElementById('tab-login');
+        const tabSignup = document.getElementById('tab-signup');
+        const viewLogin = document.getElementById('view-login');
+        const viewSignup = document.getElementById('view-signup');
+
+        function switchTab(tab) {
+            alertMessage.classList.add('hidden');
+            if (tab === 'login') {
+                tabLogin.className = "flex-1 py-4 font-bold text-leuoraBlue border-b-2 border-leuoraBlue bg-blue-50 transition";
+                tabSignup.className = "flex-1 py-4 font-bold text-gray-500 hover:text-leuoraBlue transition";
+                viewLogin.classList.add('active'); viewSignup.classList.remove('active');
+            } else {
+                tabSignup.className = "flex-1 py-4 font-bold text-leuoraBlue border-b-2 border-leuoraBlue bg-blue-50 transition";
+                tabLogin.className = "flex-1 py-4 font-bold text-gray-500 hover:text-leuoraBlue transition";
+                viewSignup.classList.add('active'); viewLogin.classList.remove('active');
+            }
+        }
+
+        function showAlert(msg, type = 'error') {
+            alertMessage.innerText = msg;
+            alertMessage.className = `mx-6 mt-4 p-3 rounded-lg text-sm text-center ${type === 'error' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`;
+            alertMessage.classList.remove('hidden');
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const { data, error } = await leuoraDb.auth.signInWithPassword({ email, password });
+            if (error) { showAlert(error.message); return; }
+            const { data: profile } = await leuoraDb.from('profiles').select('role').eq('id', data.user.id).single();
+            if (profile && profile.role === 'supplier') window.location.href = 'supplier-dashboard.html';
+            else { showAlert("This account is not registered as a supplier."); await leuoraDb.auth.signOut(); }
+        });
+
+        document.getElementById('signupForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const bizName = document.getElementById('bizName').value;
+            const email = document.getElementById('bizEmail').value;
+            const password = document.getElementById('bizPassword').value;
+            const phone = document.getElementById('bizPhone').value;
+            const whatsapp = document.getElementById('bizWhatsapp').value;
+            const bankName = document.getElementById('bankName').value;
+            const accNumber = document.getElementById('accountNumber').value;
+            const accName = document.getElementById('accountName').value;
+            const category = document.getElementById('bizCategory').value;
+            const btnText = document.getElementById('btnText');
+            const btnSpinner = document.getElementById('btnSpinner');
+            
+            btnText.innerText = "Processing..."; btnSpinner.classList.remove('hidden');
+
+            const { data: authData, error: authError } = await leuoraDb.auth.signUp({ email, password });
+            if (authError) { showAlert(authError.message); btnText.innerText = "Pay ₦1,000 & Register"; btnSpinner.classList.add('hidden'); return; }
+            const userId = authData.user.id;
+
+            FlutterwaveCheckout({
+                public_key: FLW_PUBLIC_KEY, tx_ref: "SUP-" + Date.now(), amount: 1000, currency: "NGN", payment_options: "card, banktransfer, ussd",
+                customer: { email: email, phone_number: phone, name: bizName },
+                callback: async function (response) {
+                    if (response.status === "successful") {
+                        await leuoraDb.from('profiles').insert([{ id: userId, email: email, full_name: bizName, phone_number: phone, role: 'supplier' }]);
+                        await leuoraDb.from('suppliers').insert([{ user_id: userId, business_name: bizName, whatsapp_number: whatsapp, bank_name: bankName, account_number: accNumber, account_name: accName, categories: [category], is_verified: true }]);
+                        showAlert("Payment successful! Redirecting...", 'success'); btnText.innerText = "Success!";
+                        setTimeout(() => { window.location.href = 'supplier-dashboard.html'; }, 2000);
+                    } else {
+                        showAlert("Payment was not successful. Please try again."); btnText.innerText = "Pay ₦1,000 & Register"; btnSpinner.classList.add('hidden');
+                    }
+                },
+                onclose: function() { showAlert("Payment cancelled. You must pay to register."); btnText.innerText = "Pay ₦1,000 & Register"; btnSpinner.classList.add('hidden'); },
+                customizations: { title: "Leuora Supplier Registration", description: "One-time fee of ₦1,000", logo: "https://leuora.xyz/images/logo.png" }
+            });
+        });
+    </script>
+</body>
+</html>

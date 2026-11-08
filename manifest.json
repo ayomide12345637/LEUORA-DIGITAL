@@ -1,0 +1,22 @@
+{
+  "name": "Leuora Digital",
+  "short_name": "Leuora",
+  "description": "FUTA's Premier Marketplace for Food, Gadgets, and More.",
+  "start_url": "/app.html",
+  "display": "standalone",
+  "background_color": "#1e3a8a",
+  "theme_color": "#1e3a8a",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/images/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/images/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

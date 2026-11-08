@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Supplier Dashboard | Leuora Digital</title>
+    <meta name="robots" content="noindex, nofollow">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { theme: { extend: { colors: { leuoraBlue: '#1e3a8a', leuoraYellow: '#facc15' } } } }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .view-section { display: none; }
+        .view-section.active { display: block; animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        .modal { display: none; }
+        .modal.active { display: flex; }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen pb-20">
+
+    <header class="bg-leuoraBlue text-white p-4 shadow-md sticky top-0 z-40 flex justify-between items-center">
+        <div class="flex items-center">
+            <img src="images/logo.png" alt="Leuora" class="h-8 mr-3" onerror="this.style.display='none'">
+            <div><h1 class="font-bold text-lg leading-tight">Supplier Hub</h1><p id="headerBizName" class="text-xs text-blue-200">Loading...</p></div>
+        </div>
+        <button onclick="logout()" class="bg-blue-800 hover:bg-red-600 p-2 rounded-lg transition" title="Logout"><i class="fa-solid fa-arrow-right-from-bracket"></i></button>
+    </header>
+
+    <div id="mainLoader" class="flex flex-col items-center justify-center h-64"><i class="fa-solid fa-circle-notch fa-spin text-4xl text-leuoraBlue mb-4"></i><p class="text-gray-500">Loading your store data...</p></div>
+    <div id="alertMessage" class="hidden m-4 p-3 rounded-lg text-sm text-center"></div>
+
+    <main id="mainContent" class="hidden p-4 max-w-2xl mx-auto">
+        <section id="view-upload" class="view-section active">
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xl font-bold text-gray-800" id="uploadTitle">Upload New Product</h2>
+                    <button id="cancelEditBtn" onclick="resetUploadForm()" class="hidden text-red-500 text-sm font-bold underline">Cancel Edit</button>
+                </div>
+                <form id="uploadForm">
+                    <input type="hidden" id="editProductId" value="">
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-1">Product Title</label>
+                            <input type="text" id="prodTitle" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-leuoraBlue" required>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-1">Category</label>
+                            <select id="prodCategory" onchange="togglePriceField()" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-leuoraBlue" required>
+                                <option value="" disabled selected>Select a category</option>
+                            </select>
+                        </div>
+
+                        <!-- Price Box (Hides for Clothing) -->
+                        <div id="priceContainer">
+                            <label class="block text-sm font-bold text-gray-700 mb-1">Your Price (₦)</label>
+                            <input type="number" id="prodPrice" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-leuoraBlue">
+                            <p class="text-xs text-gray-500 mt-1">Note: Admin will add a markup to this price for the final selling price.</p>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-1">Product Description</label>
+                            <textarea id="prodDesc" rows="3" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-leuoraBlue" required></textarea>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-1">Product Image</label>
+                            <div class="border-2 border-dashed border-gray-300 rounded-xl p-4 text-center relative hover:bg-gray-50 transition">
+                                <input type="file" id="prodImage" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" required>
+                                <i class="fa-solid fa-cloud-arrow-up text-3xl text-leuoraBlue mb-2"></i>
+                                <p class="text-sm text-gray-600 font-semibold" id="imageFileName">Tap to select an image</p>
+                                <p class="text-xs text-gray-400 mt-1">JPG, PNG (Max 5MB)</p>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" id="uploadBtn" class="w-full mt-6 bg-leuoraBlue text-white font-bold py-3 rounded-xl shadow-lg hover:bg-blue-900 transition flex justify-center items-center"><span id="uploadBtnText">Submit for Approval</span><i id="uploadSpinner" class="hidden fa-solid fa-circle-notch fa-spin ml-2"></i></button>
+                </form>
+            </div>
+        </section>
+
+        <section id="view-submissions" class="view-section">
+            <div class="flex justify-between items-center mb-4"><h2 class="text-xl font-bold text-gray-800">My Submissions</h2><button onclick="loadSubmissions()" class="text-leuoraBlue text-sm font-semibold"><i class="fa-solid fa-rotate-right mr-1"></i> Refresh</button></div>
+            <div id="submissionsContainer" class="space-y-4"></div>
+        </section>
+
+        <section id="view-orders" class="view-section">
+            <div class="flex justify-between items-center mb-4"><h2 class="text-xl font-bold text-gray-800">My Orders</h2><button onclick="loadOrders()" class="text-leuoraBlue text-sm font-semibold"><i class="fa-solid fa-rotate-right mr-1"></i> Refresh</button></div>
+            <div id="ordersContainer" class="space-y-4"><p class="text-gray-500 text-sm text-center py-10">Loading orders...</p></div>
+        </section>
+    </main>
+
+    <nav id="bottomNav" class="hidden fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 flex justify-around p-2 z-50 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+        <button onclick="switchTab('upload')" id="nav-upload" class="flex flex-col items-center p-2 text-leuoraBlue w-1/3"><i class="fa-solid fa-cloud-arrow-up text-xl mb-1"></i><span class="text-[10px] font-bold">Upload</span></button>
+        <button onclick="switchTab('submissions')" id="nav-submissions" class="flex flex-col items-center p-2 text-gray-400 hover:text-leuoraBlue w-1/3 transition"><i class="fa-solid fa-boxes-stacked text-xl mb-1"></i><span class="text-[10px] font-bold">My Products</span></button>
+        <button onclick="switchTab('orders')" id="nav-orders" class="flex flex-col items-center p-2 text-gray-400 hover:text-leuoraBlue w-1/3 transition"><i class="fa-solid fa-truck-fast text-xl mb-1"></i><span class="text-[10px] font-bold">Orders</span></button>
+    </nav>
+
+    <div id="priceModal" class="modal fixed inset-0 bg-black bg-opacity-50 z-[60] items-center justify-center p-4">
+        <div class="bg-white rounded-2xl p-6 w-full max-w-sm">
+            <h3 class="text-lg font-bold text-gray-800 mb-2">Request Price Change</h3>
+            <p class="text-sm text-gray-500 mb-4">If market prices change, request a new price from the Admin.</p>
+            <input type="hidden" id="modalProductId">
+            <div class="mb-4"><label class="block text-sm font-bold text-gray-700 mb-1">New Supplier Price (₦)</label><input type="number" id="newPriceInput" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-leuoraBlue" required></div>
+            <div class="mb-6"><label class="block text-sm font-bold text-gray-700 mb-1">Reason for Change</label><textarea id="priceReasonInput" rows="2" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-leuoraBlue" required></textarea></div>
+            <div class="flex justify-end space-x-3"><button onclick="closeModal('priceModal')" class="px-4 py-2 text-gray-600 font-bold hover:bg-gray-100 rounded-lg">Cancel</button><button onclick="submitPriceChange()" class="px-4 py-2 bg-leuoraBlue text-white font-bold rounded-lg hover:bg-blue-900">Send Request</button></div>
+        </div>
+    </div>
+
+    <script>
+        const supabaseUrl = 'https://rmlgvsvvbwoudrosbbpd.supabase.co';
+        const supabaseKey = 'sb_publishable_EaVd_ShfJE4L5FKkrXQThA_c56igAp7';
+        const leuoraDb = supabase.createClient(supabaseUrl, supabaseKey);
+
+        // --- CLOUDINARY CONFIG ---
+        const CLOUDINARY_CLOUD_NAME = 'grtnngmn';
+        const CLOUDINARY_UPLOAD_PRESET = 'leuora_preset'; // The unsigned preset we just created
+
+        let currentUser = null;
+        let currentSupplier = null;
+
+        async function init() {
+            const { data: { session } } = await leuoraDb.auth.getSession();
+            if (!session) { window.location.href = 'supplier.html'; return; }
+            currentUser = session.user;
+
+            const { data: supplier, error } = await leuoraDb.from('suppliers').select('*').eq('user_id', currentUser.id).single();
+            if (error || !supplier) { alert("Supplier profile not found. Please log in again."); window.location.href = 'supplier.html'; return; }
+
+            currentSupplier = supplier;
+            document.getElementById('headerBizName').innerText = supplier.business_name;
+
+            const categorySelect = document.getElementById('prodCategory');
+            categorySelect.innerHTML = '<option value="" disabled selected>Select a category</option>';
+            if (supplier.categories && supplier.categories.length > 0) {
+                supplier.categories.forEach(cat => { categorySelect.innerHTML += `<option value="${cat}">${cat}</option>`; });
+            } else {
+                categorySelect.innerHTML = '<option value="" disabled>No categories assigned yet. Contact Admin.</option>';
+            }
+
+            document.getElementById('mainLoader').classList.add('hidden');
+            document.getElementById('mainContent').classList.remove('hidden');
+            document.getElementById('bottomNav').classList.remove('hidden');
+            loadSubmissions();
+        }
+
+        function togglePriceField() {
+            const category = document.getElementById('prodCategory').value;
+            const priceContainer = document.getElementById('priceContainer');
+            const priceInput = document.getElementById('prodPrice');
+            
+            if (category === 'Clothing') {
+                priceContainer.style.display = 'none';
+                priceInput.required = false;
+                priceInput.value = '0'; 
+            } else {
+                priceContainer.style.display = 'block';
+                priceInput.required = true;
+                if(priceInput.value === '0') priceInput.value = ''; 
+            }
+        }
+
+        function switchTab(tab) {
+            document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
+            document.getElementById(`view-${tab}`).classList.add('active');
+            ['upload', 'submissions', 'orders'].forEach(t => {
+                const btn = document.getElementById(`nav-${t}`);
+                if (t === tab) btn.classList.replace('text-gray-400', 'text-leuoraBlue');
+                else btn.classList.replace('text-leuoraBlue', 'text-gray-400');
+            });
+            if (tab === 'submissions') loadSubmissions();
+            if (tab === 'orders') loadOrders();
+        }
+
+        document.getElementById('prodImage').addEventListener('change', function() {
+            const fileName = this.files[0] ? this.files[0].name : "Tap to select an image";
+            document.getElementById('imageFileName').innerText = fileName;
+        });
+
+        document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const editId = document.getElementById('editProductId').value;
+            const title = document.getElementById('prodTitle').value;
+            const category = document.getElementById('prodCategory').value;
+            const price = document.getElementById('prodPrice').value || 0; 
+            const desc = document.getElementById('prodDesc').value;
+            const fileInput = document.getElementById('prodImage');
+
+            const btnText = document.getElementById('uploadBtnText');
+            const spinner = document.getElementById('uploadSpinner');
+            const btn = document.getElementById('uploadBtn');
+            btn.disabled = true; btnText.innerText = "Uploading..."; spinner.classList.remove('hidden');
+
+            try {
+                let imageUrl = null;
+                
+                // --- CLOUDINARY IMAGE UPLOAD ---
+                if (fileInput.files.length > 0) {
+                    const file = fileInput.files[0];
+                    const formData = new FormData();
+                    formData.append('file', file);
+                    formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+
+                    const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, {
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    const data = await res.json();
+                    if (data.error) throw new Error("Image upload failed: " + data.error.message);
+                    
+                    imageUrl = data.secure_url;
+                }
+
+                // Save details to Supabase
+                if (editId) {
+                    const updates = { title, category, supplier_price: price, description: desc, status: 'pending', rejection_reason: null };
+                    if (imageUrl) updates.image_url = imageUrl;
+                    await leuoraDb.from('products').update(updates).eq('id', editId);
+                    showAlert("Product updated and resubmitted for approval!", "success");
+                } else {
+                    if (!imageUrl) throw new Error("Please select an image.");
+                    await leuoraDb.from('products').insert([{ supplier_id: currentSupplier.id, title, category, supplier_price: price, description: desc, image_url: imageUrl, status: 'pending' }]);
+                    showAlert("Product submitted! Waiting for Admin approval.", "success");
+                }
+                resetUploadForm(); switchTab('submissions');
+            } catch (error) {
+                showAlert(error.message, "error");
+            } finally {
+                btn.disabled = false; btnText.innerText = editId ? "Update & Resubmit" : "Submit for Approval"; spinner.classList.add('hidden');
+            }
+        });
+
+        function resetUploadForm() {
+            document.getElementById('uploadForm').reset();
+            document.getElementById('editProductId').value = '';
+            document.getElementById('uploadTitle').innerText = "Upload New Product";
+            document.getElementById('uploadBtnText').innerText = "Submit for Approval";
+            document.getElementById('imageFileName').innerText = "Tap to select an image";
+            document.getElementById('cancelEditBtn').classList.add('hidden');
+            document.getElementById('prodImage').required = true;
+            document.getElementById('priceContainer').style.display = 'block';
+            document.getElementById('prodPrice').required = true;
+        }
+
+        async function loadSubmissions() {
+            const container = document.getElementById('submissionsContainer');
+            container.innerHTML = '<p class="text-gray-500 text-sm text-center py-4"><i class="fa-solid fa-spinner fa-spin"></i> Loading...</p>';
+            const { data: products, error } = await leuoraDb.from('products').select('*').eq('supplier_id', currentSupplier.id).order('created_at', { ascending: false });
+
+            if (error || products.length === 0) {
+                container.innerHTML = '<div class="text-center py-10"><i class="fa-solid fa-box-open text-4xl text-gray-300 mb-3"></i><p class="text-gray-500">You have not uploaded any products yet.</p></div>';
+                return;
+            }
+
+            container.innerHTML = products.map(p => {
+                let statusBadge = ''; let actionButtons = '';
+                if (p.status === 'pending') statusBadge = `<span class="bg-yellow-100 text-yellow-800 text-[10px] font-bold px-2 py-1 rounded-full">Pending Approval</span>`;
+                else if (p.status === 'approved') {
+                    statusBadge = `<span class="bg-green-100 text-green-800 text-[10px] font-bold px-2 py-1 rounded-full">Approved (Live)</span>`;
+                    actionButtons = `<button onclick="openPriceModal('${p.id}')" class="text-xs font-bold text-leuoraBlue border border-leuoraBlue px-3 py-1.5 rounded-lg hover:bg-blue-50 transition">Request Price Change</button>`;
+                } else if (p.status === 'rejected') {
+                    statusBadge = `<span class="bg-red-100 text-red-800 text-[10px] font-bold px-2 py-1 rounded-full">Rejected</span>`;
+                    actionButtons = `<button onclick="editRejectedProduct('${p.id}')" class="text-xs font-bold text-white bg-gray-800 px-3 py-1.5 rounded-lg hover:bg-black transition">Edit & Resubmit</button>`;
+                }
+                
+                const isClothing = p.category === 'Clothing';
+                const adminPriceDisplay = (p.admin_price && !isClothing) ? `<p class="text-xs text-gray-500 mt-1">Admin Selling Price: <strong>₦${Number(p.admin_price).toLocaleString()}</strong></p>` : '';
+                const priceDisplay = isClothing ? '<span class="text-xs text-orange-500 font-bold">Price on request</span>' : `<p class="text-sm font-bold text-gray-800">Your Price: ₦${Number(p.supplier_price).toLocaleString()}</p>`;
+                
+                const rejectionReason = p.status === 'rejected' && p.rejection_reason ? `<div class="bg-red-50 p-2 rounded-lg mt-2 text-xs text-red-700"><strong>Reason:</strong> ${p.rejection_reason}</div>` : '';
+
+                return `<div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex gap-4 mb-3"><img src="${p.image_url}" class="w-20 h-20 object-cover rounded-xl flex-shrink-0" onerror="this.src='https://placehold.co/100x100'"><div class="flex-1 min-w-0"><div class="flex justify-between items-start mb-1"><h4 class="font-bold text-gray-800 text-sm truncate pr-2">${p.title}</h4>${statusBadge}</div><p class="text-xs text-gray-500 mb-1">${p.category}</p>${priceDisplay}${adminPriceDisplay}${rejectionReason}<div class="mt-3 flex justify-end">${actionButtons}</div></div></div>`;
+            }).join('');
+        }
+
+        async function editRejectedProduct(id) {
+            const { data: product } = await leuoraDb.from('products').select('*').eq('id', id).single();
+            if (!product) return;
+            document.getElementById('editProductId').value = product.id;
+            document.getElementById('prodTitle').value = product.title;
+            document.getElementById('prodCategory').value = product.category;
+            document.getElementById('prodDesc').value = product.description;
+            
+            togglePriceField();
+            document.getElementById('prodPrice').value = product.supplier_price;
+
+            document.getElementById('uploadTitle').innerText = "Edit Rejected Product";
+            document.getElementById('uploadBtnText').innerText = "Update & Resubmit";
+            document.getElementById('cancelEditBtn').classList.remove('hidden');
+            document.getElementById('prodImage').required = false;
+            document.getElementById('imageFileName').innerText = "Keep current image (or tap to change)";
+            switchTab('upload');
+        }
+
+        function openPriceModal(productId) {
+            document.getElementById('modalProductId').value = productId;
+            document.getElementById('newPriceInput').value = '';
+            document.getElementById('priceReasonInput').value = '';
+            document.getElementById('priceModal').classList.add('active');
+        }
+
+        async function submitPriceChange() {
+            const productId = document.getElementById('modalProductId').value;
+            const newPrice = document.getElementById('newPriceInput').value;
+            const reason = document.getElementById('priceReasonInput').value;
+            if (!newPrice || !reason) { alert("Please fill all fields."); return; }
+            const { error } = await leuoraDb.from('price_change_requests').insert([{ product_id: productId, supplier_id: currentSupplier.id, requested_price: newPrice, reason: reason, status: 'pending' }]);
+            if (error) alert("Error sending request: " + error.message);
+            else { closeModal('priceModal'); alert("Price change request sent to Admin successfully!"); }
+        }
+
+        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+        async function loadOrders() {
+            const container = document.getElementById('ordersContainer');
+            const { data: orderItems, error } = await leuoraDb.from('order_items').select(`quantity, price_at_purchase, supplier_price_at_purchase, orders ( id, status, pickup_location, created_at, profiles ( full_name, phone_number ) ), products ( title, image_url )`).eq('supplier_id', currentSupplier.id).order('created_at', { ascending: false });
+
+            if (error || !orderItems || orderItems.length === 0) {
+                container.innerHTML = '<div class="text-center py-10"><i class="fa-solid fa-truck-fast text-4xl text-gray-300 mb-3"></i><p class="text-gray-500">No orders yet.</p></div>';
+                return;
+            }
+
+            const groupedOrders = {};
+            orderItems.forEach(item => {
+                if (!item.orders) return;
+                const orderId = item.orders.id;
+                if (!groupedOrders[orderId]) groupedOrders[orderId] = { orderData: item.orders, items: [] };
+                groupedOrders[orderId].items.push(item);
+            });
+
+            container.innerHTML = Object.values(groupedOrders).map(group => {
+                const order = group.orderData;
+                const studentName = order.profiles?.full_name || 'Student';
+                const studentPhone = order.profiles?.phone_number || 'No Phone';
+                let statusColor = 'bg-gray-100 text-gray-800';
+                if (order.status === 'pending') statusColor = 'bg-yellow-100 text-yellow-800';
+                if (order.status === 'shipped') statusColor = 'bg-blue-100 text-blue-800';
+                if (order.status === 'delivered') statusColor = 'bg-green-100 text-green-800';
+
+                const itemsList = group.items.map(i => `<div class="flex items-center gap-2 mt-2 bg-gray-50 p-2 rounded-lg"><img src="${i.products?.image_url}" class="w-10 h-10 object-cover rounded-md"><div class="flex-1"><p class="text-xs font-bold text-gray-800">${i.products?.title}</p><p class="text-[10px] text-gray-500">Qty: ${i.quantity} | Earnings: ₦${Number(i.supplier_price_at_purchase * i.quantity).toLocaleString()}</p></div></div>`).join('');
+
+                return `<div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 mb-4"><div class="flex justify-between items-start mb-2"><div><h4 class="font-bold text-gray-800 text-sm">Order #${order.id.substring(0,8)}</h4><p class="text-[10px] text-gray-500">${new Date(order.created_at).toLocaleString()}</p></div><span class="${statusColor} text-[10px] font-bold px-2 py-1 rounded-full">${order.status.toUpperCase()}</span></div><div class="text-xs text-gray-600 mb-3"><p><i class="fa-regular fa-user mr-1"></i> ${studentName} (${studentPhone})</p><p><i class="fa-solid fa-location-dot mr-1"></i> Pickup: ${order.pickup_location}</p></div><div class="mb-3">${itemsList}</div><p class="text-[10px] text-gray-400 text-center italic">Wait for Admin to contact you on WhatsApp to arrange packaging.</p></div>`;
+            }).join('');
+        }
+
+        function showAlert(msg, type = 'error') {
+            const el = document.getElementById('alertMessage');
+            el.innerText = msg;
+            el.className = `m-4 p-3 rounded-lg text-sm text-center ${type === 'error' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`;
+            el.classList.remove('hidden');
+            window.scrollTo(0, 0);
+            setTimeout(() => el.classList.add('hidden'), 4000);
+        }
+
+        async function logout() { await leuoraDb.auth.signOut(); window.location.href = 'index.html'; }
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
