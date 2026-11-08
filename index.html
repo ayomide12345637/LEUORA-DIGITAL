@@ -106,8 +106,11 @@
         <!-- Action Buttons -->
         <div class="w-full space-y-4">
             
-            <!-- Install APK Button -->
-            <a href="https://github.com/ayomide12345637/LEUORA-DIGITAL/releases/download/v1.0/LeuoraDigital.apk" onclick="showInstallModal()" class="flex items-center justify-between w-full bg-leuoraYellow text-leuoraBlue p-4 rounded-2xl shadow-lg hover:bg-yellow-400 transition">
+            <!-- Install APK Button (Added target="_blank" and explicit download trigger) -->
+            <a href="https://github.com/ayomide12345637/LEUORA-DIGITAL/releases/download/v1.0/LeuoraDigital.apk" 
+               target="_blank" 
+               onclick="handleDownload(event, this.href)" 
+               class="flex items-center justify-between w-full bg-leuoraYellow text-leuoraBlue p-4 rounded-2xl shadow-lg hover:bg-yellow-400 transition">
                 <div class="flex items-center">
                     <i class="fa-brands fa-android text-3xl mr-4"></i>
                     <div class="text-left">
@@ -178,9 +181,14 @@
             });
         }
 
-        // POPUP LOGIC
-        function showInstallModal() {
+        // SMART DOWNLOAD LOGIC
+        function handleDownload(event, url) {
+            // Show the popup
             document.getElementById('installModal').classList.add('active');
+            
+            // Force the browser to open the link in a new tab to trigger the download
+            // (This bypasses the popup blocker)
+            window.open(url, '_blank');
         }
 
         function closeInstallModal() {
