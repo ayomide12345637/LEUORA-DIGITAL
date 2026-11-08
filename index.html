@@ -83,8 +83,8 @@
             <div class="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4 text-leuoraBlue">
                 <i class="fa-brands fa-android text-3xl"></i>
             </div>
-            <h3 class="text-xl font-bold text-gray-800 mb-2">Downloading App...</h3>
-            <p class="text-sm text-gray-600 mb-6">Your download will begin shortly. Please check your phone's notification bar or your <b>Downloads</b> folder to install the Leuora App.</p>
+            <h3 class="text-xl font-bold text-gray-800 mb-2">Download Started!</h3>
+            <p class="text-sm text-gray-600 mb-6">Please check your phone's <b>notification bar</b> or your <b>Downloads</b> folder to install the Leuora App.</p>
             <button onclick="closeInstallModal()" class="w-full bg-leuoraBlue text-white font-bold py-3 rounded-xl hover:bg-blue-900 transition">Got it</button>
         </div>
     </div>
@@ -106,10 +106,10 @@
         <!-- Action Buttons -->
         <div class="w-full space-y-4">
             
-            <!-- Install APK Button (Added target="_blank" and explicit download trigger) -->
-            <a href="https://github.com/ayomide12345637/LEUORA-DIGITAL/releases/download/v1.0/LeuoraDigital.apk" 
-               target="_blank" 
-               onclick="handleDownload(event, this.href)" 
+            <!-- Install APK Button (Using Raw Link & Download attribute) -->
+            <a href="https://raw.githubusercontent.com/ayomide12345637/LEUORA-DIGITAL/main/LeuoraDigital.apk" 
+               download="LeuoraDigital.apk"
+               onclick="showInstallModal()" 
                class="flex items-center justify-between w-full bg-leuoraYellow text-leuoraBlue p-4 rounded-2xl shadow-lg hover:bg-yellow-400 transition">
                 <div class="flex items-center">
                     <i class="fa-brands fa-android text-3xl mr-4"></i>
@@ -181,14 +181,10 @@
             });
         }
 
-        // SMART DOWNLOAD LOGIC
-        function handleDownload(event, url) {
-            // Show the popup
+        // POPUP LOGIC
+        function showInstallModal() {
+            // Show the popup while the download happens in the background
             document.getElementById('installModal').classList.add('active');
-            
-            // Force the browser to open the link in a new tab to trigger the download
-            // (This bypasses the popup blocker)
-            window.open(url, '_blank');
         }
 
         function closeInstallModal() {
