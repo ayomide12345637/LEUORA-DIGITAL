@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "xyz.leuora.twa",
+        "sha256_cert_fingerprints": ["B1:A6:DE:F8:96:63:D9:EB:A2:2C:BF:D2:FC:F9:6C:CC:2E:E2:16:3E:F8:93:3A:A8:8F:71:9D:60:69:FD:15:B6"]
+      }
+    }]
