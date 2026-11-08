@@ -32,14 +32,12 @@
         #splashScreen { transition: opacity 0.5s ease-out; }
         .splash-hidden { opacity: 0; pointer-events: none; }
 
-        /* Toggle Switch CSS */
         .toggle-checkbox:checked { right: 0; border-color: #1e3a8a; }
         .toggle-checkbox:checked + .toggle-label { background-color: #1e3a8a; }
     </style>
 </head>
 <body class="bg-gray-50 font-sans pb-20">
 
-    <!-- SPLASH SCREEN -->
     <div id="splashScreen" class="fixed inset-0 bg-leuoraBlue z-[9999] flex flex-col items-center justify-center text-white">
         <img src="images/logo.png" alt="Leuora" class="w-24 h-24 mb-4 animate-pulse" onerror="this.src='https://placehold.co/100x100?text=L'">
         <h1 class="text-3xl font-bold tracking-wider mb-2">Leuora Digital</h1>
@@ -49,7 +47,6 @@
 
     <audio id="notifSound" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" preload="auto"></audio>
 
-    <!-- Sidebar -->
     <div id="sidebarOverlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden" onclick="toggleSidebar()"></div>
     <div id="sidebarMenu" class="fixed top-0 left-0 h-full w-64 bg-leuoraBlue text-white z-50 transform -translate-x-full transition-transform duration-300 flex flex-col">
         <div class="p-6 border-b border-blue-800 flex items-center justify-between">
@@ -67,10 +64,7 @@
             <a href="#" onclick="switchView('view-account'); toggleSidebar();" class="flex items-center px-6 py-4 hover:bg-blue-800 transition"><i class="fa-solid fa-user w-8"></i> My Account</a>
         </div>
         <div class="p-6 border-t border-blue-800">
-            <!-- PREFILLED WHATSAPP MESSAGE -->
-            <a href="https://wa.me/2348167914665?text=Hello%20Leuora%20Digital%2C%20I%20am%20reaching%20out%20from%20your%20website." target="_blank" class="flex items-center justify-center bg-green-500 text-white py-3 rounded-xl font-bold hover:bg-green-600 transition">
-                <i class="fa-brands fa-whatsapp text-xl mr-2"></i> Contact Us
-            </a>
+            <a href="https://wa.me/2348167914665?text=Hello%20Leuora%20Digital%2C%20I%20am%20reaching%20out%20from%20your%20website." target="_blank" class="flex items-center justify-center bg-green-500 text-white py-3 rounded-xl font-bold hover:bg-green-600 transition"><i class="fa-brands fa-whatsapp text-xl mr-2"></i> Contact Us</a>
         </div>
     </div>
 
@@ -95,7 +89,7 @@
         </div>
     </header>
 
-    <!-- Home View -->
+    <!-- Views (Home, Notifications, Repair, Cart, Checkout, Tracking, Account) -->
     <main id="view-home" class="app-view active">
         <div class="relative w-full h-48 md:h-64 overflow-hidden bg-gray-200">
             <div id="heroSlider" class="w-full h-full flex transition-transform duration-500">
@@ -109,7 +103,6 @@
                 <p class="text-sm">Carefully picked for FUTA students.</p>
             </div>
         </div>
-
         <div class="mt-6 px-4">
             <h2 class="text-lg font-bold text-leuoraBlue mb-3">Shop by Category</h2>
             <div class="grid grid-cols-4 gap-3">
@@ -126,44 +119,31 @@
                 <div class="flex flex-col items-center cursor-pointer"><div class="w-16 h-16 bg-white rounded-2xl shadow-sm border border-gray-100 p-1"><img src="https://images.unsplash.com/photo-1549465220-1a8b9238cd48?auto=format&fit=crop&w=200&q=80" class="w-full h-full object-cover rounded-xl" onerror="this.src='https://placehold.co/100x100?text=Gifts'"></div><span class="text-[10px] text-center mt-1 font-semibold text-gray-700">Gift Vendor</span></div>
             </div>
         </div>
-
         <div class="mt-8 px-4"><h2 class="text-lg font-bold text-orange-500 flex items-center mb-3"><i class="fa-solid fa-bolt mr-2"></i>Flash Deals</h2><div id="flashDealsContainer" class="flex overflow-x-auto hide-scrollbar space-x-4 pb-2"><p class="text-sm text-gray-400">Loading...</p></div></div>
         <div class="mt-8 px-4"><h2 class="text-lg font-bold text-leuoraBlue flex items-center mb-3"><i class="fa-solid fa-arrow-trend-up mr-2"></i>Trending</h2><div id="trendingContainer" class="flex overflow-x-auto hide-scrollbar space-x-4 pb-2"><p class="text-sm text-gray-400">Loading...</p></div></div>
         <div class="mt-8 px-4"><h2 class="text-lg font-bold text-green-600 flex items-center mb-3"><i class="fa-solid fa-bag-shopping mr-2"></i>All Products</h2><div id="allProductsContainer" class="grid grid-cols-2 gap-4"><p class="text-sm text-gray-400">Loading...</p></div></div>
     </main>
 
-    <!-- Notifications View -->
     <main id="view-notifications" class="app-view p-4">
         <h1 class="text-2xl font-bold text-leuoraBlue mb-4">Notifications</h1>
         <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex justify-between items-center mb-6">
-            <div>
-                <h3 class="font-bold text-gray-800">Push Notifications</h3>
-                <p class="text-xs text-gray-500">Get alerts for orders & deals</p>
-            </div>
+            <div><h3 class="font-bold text-gray-800">Push Notifications</h3><p class="text-xs text-gray-500">Get alerts for orders & deals</p></div>
             <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
                 <input type="checkbox" name="toggle" id="notifToggle" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" onchange="handleNotificationToggle(this)"/>
                 <label for="notifToggle" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
             </div>
         </div>
-        <div id="notificationsList" class="space-y-3">
-            <div class="text-center text-gray-500 py-10">
-                <i class="fa-regular fa-bell-slash text-4xl mb-3 text-gray-300"></i>
-                <p>No new notifications right now.</p>
-            </div>
-        </div>
+        <div id="notificationsList" class="space-y-3"><div class="text-center text-gray-500 py-10"><i class="fa-regular fa-bell-slash text-4xl mb-3 text-gray-300"></i><p>No new notifications right now.</p></div></div>
     </main>
 
-    <!-- Phone Repair View -->
     <main id="view-phone-repair" class="app-view p-6 flex flex-col items-center justify-center min-h-[70vh] text-center">
         <div class="w-24 h-24 bg-blue-50 rounded-full flex items-center justify-center mb-6"><i class="fa-solid fa-screwdriver-wrench text-5xl text-leuoraBlue"></i></div>
         <h1 class="text-2xl font-bold text-gray-800 mb-4">Phone & Gadget Repair</h1>
         <p class="text-gray-600 mb-8 leading-relaxed">Cracked screen? Battery issues? Water damage? Our trusted vendors at FUTA can fix it fast. <br><br>Tap the button below to chat directly with our repair expert and get a quote immediately.</p>
-        <!-- PREFILLED WHATSAPP MESSAGE -->
         <a href="https://wa.me/2347070761543?text=Hello%2C%20I%20saw%20your%20Phone%20Repair%20page%20on%20Leuora%20Digital.%20I%20need%20a%20quote%20for%20my%20device." target="_blank" class="w-full max-w-xs bg-green-500 text-white font-bold py-4 rounded-xl shadow-lg hover:bg-green-600 transition flex items-center justify-center"><i class="fa-brands fa-whatsapp text-2xl mr-3"></i> Chat with Vendor</a>
         <button onclick="switchView('view-home')" class="mt-6 text-gray-500 underline text-sm">Back to Home</button>
     </main>
 
-    <!-- Cart View -->
     <main id="view-cart" class="app-view p-4">
         <h1 class="text-2xl font-bold text-leuoraBlue mb-4">My Cart</h1>
         <div id="cartItemsContainer" class="space-y-4"></div>
@@ -175,47 +155,34 @@
         </div>
     </main>
 
-    <!-- Checkout View -->
     <main id="view-checkout" class="app-view p-4">
         <div class="flex items-center mb-4"><button onclick="switchView('view-cart')" class="mr-3 text-leuoraBlue"><i class="fa-solid fa-arrow-left text-xl"></i></button><h1 class="text-2xl font-bold text-leuoraBlue">Checkout</h1></div>
         <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 mb-4"><h2 class="font-bold text-gray-800 mb-3">Pickup Location</h2><select id="pickupLocation" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-leuoraBlue text-gray-700"><option>North Gate</option><option>South Gate</option><option>West Gate</option></select></div>
         <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 mb-4"><h2 class="font-bold text-gray-800 mb-3">Payment Method</h2><div class="space-y-2"><label class="flex items-center p-3 border rounded-xl cursor-pointer hover:bg-gray-50"><input type="radio" name="payment" value="online" checked class="mr-3"><span class="font-semibold text-gray-700">Pay Online (Flutterwave)</span></label><label class="flex items-center p-3 border rounded-xl cursor-pointer hover:bg-gray-50"><input type="radio" name="payment" value="delivery" class="mr-3"><span class="font-semibold text-gray-700">Pay on Delivery (Orders > ₦5,000)</span></label></div><p class="text-xs text-gray-500 mt-3"><i class="fa-solid fa-circle-info mr-1"></i> Clothing items are sent to the vendor directly via WhatsApp.</p></div>
-        
         <button onclick="processCheckout()" class="w-full bg-leuoraYellow text-leuoraBlue font-bold py-3 rounded-xl shadow-lg hover:bg-yellow-400 transition mt-6">Pay Now</button>
-
-        <!-- Network Failure Warning -->
         <div class="mt-6 bg-red-50 p-4 rounded-xl border border-red-100 text-center">
             <p class="text-xs text-red-600 font-semibold mb-2"><i class="fa-solid fa-triangle-exclamation mr-1"></i> Payment Issues or Network Drop?</p>
             <p class="text-[11px] text-gray-600 mb-3">If your card is debited but the order fails, do not panic. Click below to send us a message with your receipt.</p>
-            <a href="https://wa.me/2348167914665?text=Hello%20Leuora%20Support%2C%20I%20have%20a%20payment%20issue.%20My%20card%20was%20debited%20but%20my%20order%20did%20not%20go%20through." target="_blank" class="inline-block bg-red-600 text-white text-xs font-bold py-2 px-4 rounded-lg hover:bg-red-700 transition">
-                Contact Support on WhatsApp
-            </a>
+            <a href="https://wa.me/2348167914665?text=Hello%20Leuora%20Support%2C%20I%20have%20a%20payment%20issue.%20My%20card%20was%20debited%20but%20my%20order%20did%20not%20go%20through." target="_blank" class="inline-block bg-red-600 text-white text-xs font-bold py-2 px-4 rounded-lg hover:bg-red-700 transition">Contact Support on WhatsApp</a>
         </div>
     </main>
 
-    <!-- Order Tracking View -->
-    <main id="view-tracking" class="app-view p-4 flex flex-col items-center mt-4">
-        <div id="trackingContent" class="w-full max-w-sm"></div>
-    </main>
+    <main id="view-tracking" class="app-view p-4 flex flex-col items-center mt-4"><div id="trackingContent" class="w-full max-w-sm"></div></main>
 
-    <!-- Account View -->
     <main id="view-account" class="app-view p-4">
         <h1 class="text-2xl font-bold text-leuoraBlue mb-4">My Account</h1>
         <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 text-center mb-6">
             <div id="accountInitial" class="w-20 h-20 bg-leuoraBlue rounded-full mx-auto flex items-center justify-center text-white text-3xl font-bold mb-3">L</div>
-            <h2 class="text-xl font-bold text-gray-800" id="accountName">Guest User</h2>
-            <p class="text-gray-500 text-sm" id="accountEmail">Please sign in to your account</p>
-            <span id="accountGender" class="inline-block bg-gray-100 text-gray-600 text-xs px-3 py-1 rounded-full mt-2 font-semibold">Guest</span>
+            <h2 class="text-xl font-bold text-gray-800" id="accountName">Loading...</h2>
+            <p class="text-gray-500 text-sm" id="accountEmail">Please wait...</p>
+            <span id="accountGender" class="inline-block bg-gray-100 text-gray-600 text-xs px-3 py-1 rounded-full mt-2 font-semibold">...</span>
         </div>
         <div class="space-y-3">
             <button onclick="switchView('view-tracking')" class="w-full bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex justify-between items-center hover:bg-gray-50 transition"><span class="font-semibold text-gray-700"><i class="fa-solid fa-box mr-3 text-leuoraBlue"></i>My Orders</span><i class="fa-solid fa-chevron-right text-gray-400"></i></button>
-            <button id="authActionBtn" onclick="handleAuthAction()" class="w-full bg-leuoraBlue text-white p-4 rounded-xl shadow-sm flex justify-center items-center hover:bg-blue-900 transition font-bold mt-8">
-                <i class="fa-solid fa-arrow-right-to-bracket mr-3"></i> Sign In / Create Account
-            </button>
+            <button id="authActionBtn" onclick="handleAuthAction()" class="w-full bg-leuoraBlue text-white p-4 rounded-xl shadow-sm flex justify-center items-center hover:bg-blue-900 transition font-bold mt-8"><i class="fa-solid fa-arrow-right-to-bracket mr-3"></i> Sign In / Create Account</button>
         </div>
     </main>
 
-    <!-- PREFILLED WHATSAPP BUTTON -->
     <a href="https://wa.me/2348167914665?text=Hello%20Leuora%20Digital%2C%20I%20am%20reaching%20out%20from%20your%20website." target="_blank" class="fixed bottom-6 right-6 bg-green-500 text-white w-14 h-14 rounded-full flex items-center justify-center shadow-2xl hover:bg-green-600 transition z-50"><i class="fa-brands fa-whatsapp text-3xl"></i></a>
 
     <script>
@@ -237,90 +204,46 @@
         }
 
         window.handleNotificationToggle = async function(checkbox) {
-            if (!currentUser) {
-                alert("Please sign in to enable notifications.");
-                checkbox.checked = false;
-                return;
-            }
-
+            if (!currentUser) { alert("Please sign in to enable notifications."); checkbox.checked = false; return; }
             if (checkbox.checked) {
-                if (!("Notification" in window) || !("serviceWorker" in navigator)) {
-                    alert("Your browser doesn't support push notifications.");
-                    checkbox.checked = false;
-                    return;
-                }
-
+                if (!("Notification" in window) || !("serviceWorker" in navigator)) { alert("Your browser doesn't support push notifications."); checkbox.checked = false; return; }
                 const permission = await Notification.requestPermission();
                 if (permission === 'granted') {
                     try {
                         const registration = await navigator.serviceWorker.ready;
-                        const subscription = await registration.pushManager.subscribe({
-                            userVisibleOnly: true,
-                            applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
-                        });
-
+                        const subscription = await registration.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY) });
                         const subJSON = subscription.toJSON();
-                        
-                        await leuoraDb.from('push_subscriptions').insert([{
-                            user_id: currentUser.id,
-                            endpoint: subJSON.endpoint,
-                            auth: subJSON.keys.auth,
-                            p256dh: subJSON.keys.p256dh
-                        }]);
-                        
+                        await leuoraDb.from('push_subscriptions').insert([{ user_id: currentUser.id, endpoint: subJSON.endpoint, auth: subJSON.keys.auth, p256dh: subJSON.keys.p256dh }]);
                         alert("Push notifications enabled successfully!");
-                    } catch (error) {
-                        console.error("Error subscribing to push:", error);
-                        alert("Failed to enable notifications. Please try again.");
-                        checkbox.checked = false;
-                    }
-                } else {
-                    alert("You blocked notifications. Please allow them in your browser settings.");
-                    checkbox.checked = false;
-                }
-            } else {
-                alert("Push notifications disabled for this device.");
-            }
+                    } catch (error) { alert("Failed to enable notifications. Please try again."); checkbox.checked = false; }
+                } else { alert("You blocked notifications. Please allow them in browser settings."); checkbox.checked = false; }
+            } else { alert("Push notifications disabled for this device."); }
         }
 
         async function loadTracking() {
             const container = document.getElementById('trackingContent');
-            
             if (!currentUser) {
                 container.innerHTML = `<div class="text-center text-gray-500 py-10"><i class="fa-solid fa-box-open text-5xl mb-3 text-gray-300"></i><p>Please sign in to view your orders.</p><button onclick="switchView('view-account')" class="mt-4 bg-leuoraBlue text-white px-6 py-2 rounded-xl font-bold">Sign In</button></div>`;
                 return;
             }
-
             const { data: orders, error } = await leuoraDb.from('orders').select('*').eq('buyer_id', currentUser.id).order('created_at', { ascending: false }).limit(1);
-
             if (!orders || orders.length === 0) {
                 container.innerHTML = `<div class="text-center text-gray-500 py-10"><i class="fa-solid fa-box-open text-5xl mb-3 text-gray-300"></i><p>You have no active orders yet.</p><button onclick="switchView('view-home')" class="mt-4 bg-leuoraBlue text-white px-6 py-2 rounded-xl font-bold">Start Shopping</button></div>`;
                 return;
             }
-
             const order = orders[0];
-            let statusText = "Pending Admin";
-            let statusColor = "text-orange-500";
-            
+            let statusText = "Pending Admin"; let statusColor = "text-orange-500";
             if (order.status === 'shipped') { statusText = "Shipped"; statusColor = "text-blue-500"; }
             if (order.status === 'on_the_way') { statusText = "On the way"; statusColor = "text-blue-600"; }
             if (order.status === 'ready_for_pickup') { statusText = "Ready for Pickup"; statusColor = "text-green-500"; }
             if (order.status === 'delivered') { statusText = "Delivered"; statusColor = "text-green-600"; }
-
             container.innerHTML = `
                 <div class="w-32 h-32 bg-blue-50 rounded-full flex items-center justify-center mb-6 mx-auto"><i class="fa-solid fa-motorcycle text-6xl text-leuoraBlue"></i></div>
                 <h1 class="text-2xl font-bold text-gray-800 mb-2 text-center">Order Status</h1>
                 <p class="text-gray-500 mb-8 text-center">${statusText}</p>
-                
                 <div class="bg-white p-6 rounded-3xl shadow-xl w-full">
-                    <div class="flex items-center mb-6 pb-6 border-b">
-                        <div class="w-16 h-16 bg-gray-100 rounded-xl flex items-center justify-center mr-4"><i class="fa-solid fa-box text-2xl text-gray-400"></i></div>
-                        <div><h3 class="font-bold text-gray-800">Order #${order.id.substring(0,8)}</h3><p class="text-sm text-gray-500">Total: ₦${Number(order.total_amount).toLocaleString()}</p></div>
-                    </div>
-                    <div class="space-y-4 text-sm">
-                        <div class="flex justify-between"><span class="text-gray-500">Pickup Location</span><span class="font-semibold text-gray-800">${order.pickup_location}</span></div>
-                        <div class="flex justify-between"><span class="text-gray-500">Status</span><span class="font-bold ${statusColor} uppercase">${order.status}</span></div>
-                    </div>
+                    <div class="flex items-center mb-6 pb-6 border-b"><div class="w-16 h-16 bg-gray-100 rounded-xl flex items-center justify-center mr-4"><i class="fa-solid fa-box text-2xl text-gray-400"></i></div><div><h3 class="font-bold text-gray-800">Order #${order.id.substring(0,8)}</h3><p class="text-sm text-gray-500">Total: ₦${Number(order.total_amount).toLocaleString()}</p></div></div>
+                    <div class="space-y-4 text-sm"><div class="flex justify-between"><span class="text-gray-500">Pickup Location</span><span class="font-semibold text-gray-800">${order.pickup_location}</span></div><div class="flex justify-between"><span class="text-gray-500">Status</span><span class="font-bold ${statusColor} uppercase">${order.status}</span></div></div>
                 </div>
             `;
         }
@@ -336,8 +259,7 @@
         window.toggleSidebar = function() {
             const menu = document.getElementById('sidebarMenu');
             const overlay = document.getElementById('sidebarOverlay');
-            menu.classList.toggle('-translate-x-full');
-            overlay.classList.toggle('hidden');
+            menu.classList.toggle('-translate-x-full'); overlay.classList.toggle('hidden');
         }
         
         window.shareProduct = function(title, price, imageUrl) {
@@ -350,7 +272,7 @@
             try {
                 const { data, error } = await leuoraDb.from('settings').select('announcement_text').eq('id', 1).single();
                 if (!error && data && data.announcement_text) document.getElementById('announcementText').innerText = data.announcement_text;
-            } catch(e) { console.log("Using default announcement."); }
+            } catch(e) {}
         }
 
         async function loadProducts() {
@@ -370,13 +292,9 @@
 
         function renderProducts(containerId, productsArray, layoutType) {
             const container = document.getElementById(containerId);
-            if (productsArray.length === 0) {
-                container.innerHTML = `<p class="text-sm text-gray-400 w-full text-center py-4">No products here yet.</p>`;
-                return;
-            }
+            if (productsArray.length === 0) { container.innerHTML = `<p class="text-sm text-gray-400 w-full text-center py-4">No products here yet.</p>`; return; }
             container.innerHTML = productsArray.map(product => {
-                const title = product.title || 'Product';
-                const price = product.admin_price || 0;
+                const title = product.title || 'Product'; const price = product.admin_price || 0;
                 const img = product.image_url || 'https://placehold.co/400x500?text=No+Image';
                 const isClothing = product.category === 'Clothing';
                 let tagHTML = '';
@@ -384,29 +302,13 @@
                 else if (product.is_trending) tagHTML = `<span class="absolute top-2 left-2 bg-leuoraBlue text-white text-[10px] font-bold px-2 py-1 rounded-full">Trending</span>`;
                 const cardClass = layoutType === 'grid' ? 'w-full' : 'w-40 flex-shrink-0';
                 const priceDisplay = isClothing ? '<span class="text-xs text-gray-300">Ask Vendor</span>' : `<span class="text-leuoraYellow font-bold text-sm">₦${price.toLocaleString()}</span>`;
-                
-                // Pass product ID and supplier ID to cart
-                const supplierPrice = product.supplier_price || 0;
-                const supplierId = product.supplier_id || null;
-                const btnAction = isClothing 
-                    ? `window.addToCart('${product.id}', '${title}', 0, 0, '${supplierId}', true)` 
-                    : `window.addToCart('${product.id}', '${title}', ${price}, ${supplierPrice}, '${supplierId}', false)`;
-
-                return `
-                    <div onclick="window.location.href='product.html?id=${product.id}'" oncontextmenu="window.shareProduct('${title}', ${price}, '${img}'); return false;" class="${cardClass} relative rounded-2xl overflow-hidden shadow-lg aspect-[4/5] cursor-pointer group">
-                        <img src="${img}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" alt="${title}">
-                        <div class="absolute inset-0 product-gradient flex flex-col justify-end p-3">
-                            ${tagHTML}
-                            <h3 class="text-white text-sm font-bold truncate">${title}</h3>
-                            <div class="flex justify-between items-center mt-1">
-                                ${priceDisplay}
-                                <button onclick="event.stopPropagation(); ${btnAction}" class="bg-white text-leuoraBlue rounded-full h-6 w-6 flex items-center justify-center hover:bg-leuoraYellow transition"><i class="fa-solid fa-plus text-xs"></i></button>
-                            </div>
-                        </div>
-                    </div>`;
+                const supplierPrice = product.supplier_price || 0; const supplierId = product.supplier_id || null;
+                const btnAction = isClothing ? `window.addToCart('${product.id}', '${title}', 0, 0, '${supplierId}', true)` : `window.addToCart('${product.id}', '${title}', ${price}, ${supplierPrice}, '${supplierId}', false)`;
+                return `<div onclick="window.location.href='product.html?id=${product.id}'" oncontextmenu="window.shareProduct('${title}', ${price}, '${img}'); return false;" class="${cardClass} relative rounded-2xl overflow-hidden shadow-lg aspect-[4/5] cursor-pointer group"><img src="${img}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" alt="${title}"><div class="absolute inset-0 product-gradient flex flex-col justify-end p-3">${tagHTML}<h3 class="text-white text-sm font-bold truncate">${title}</h3><div class="flex justify-between items-center mt-1">${priceDisplay}<button onclick="event.stopPropagation(); ${btnAction}" class="bg-white text-leuoraBlue rounded-full h-6 w-6 flex items-center justify-center hover:bg-leuoraYellow transition"><i class="fa-solid fa-plus text-xs"></i></button></div></div></div>`;
             }).join('');
         }
 
+        // --- FIXED ACCOUNT LOADER WITH RETRY LOGIC ---
         async function loadAccount() {
             if (!currentUser) {
                 document.getElementById('accountName').innerText = "Guest User";
@@ -414,7 +316,6 @@
                 document.getElementById('accountGender').innerText = "Guest";
                 document.getElementById('accountGender').className = "inline-block bg-gray-100 text-gray-600 text-xs px-3 py-1 rounded-full mt-2 font-semibold";
                 document.getElementById('accountInitial').innerText = "G";
-                
                 const authBtn = document.getElementById('authActionBtn');
                 authBtn.className = "w-full bg-leuoraBlue text-white p-4 rounded-xl shadow-sm flex justify-center items-center hover:bg-blue-900 transition font-bold mt-8";
                 authBtn.innerHTML = '<i class="fa-solid fa-arrow-right-to-bracket mr-3"></i> Sign In / Create Account';
@@ -422,7 +323,18 @@
             }
 
             try {
-                const { data: profile } = await leuoraDb.from('profiles').select('*').eq('id', currentUser.id).single();
+                let profile = null;
+                const { data: initialData } = await leuoraDb.from('profiles').select('*').eq('id', currentUser.id).single();
+                
+                if (initialData) {
+                    profile = initialData;
+                } else {
+                    // RETRY: If profile is null, it means the database hasn't finished saving yet. Wait 1.5s and try again.
+                    await new Promise(r => setTimeout(r, 1500));
+                    const { data: retryData } = await leuoraDb.from('profiles').select('*').eq('id', currentUser.id).single();
+                    if (retryData) profile = retryData;
+                }
+
                 if (profile) {
                     document.getElementById('accountName').innerText = profile.full_name || "Student";
                     document.getElementById('accountEmail').innerText = profile.email || currentUser.email;
@@ -439,8 +351,6 @@
 
         let cart = JSON.parse(localStorage.getItem('leuoraCart')) || [];
         window.updateCartBadge = function() { document.getElementById('cartBadge').innerText = cart.length; }
-        
-        // UPDATED addToCart to capture product ID, supplier ID, and supplier price for the database
         window.addToCart = function(id, name, price, supplierPrice, supplierId, isQuote = false) {
             cart.push({ id, name, price, supplierPrice, supplierId, isQuote, qty: 1 });
             localStorage.setItem('leuoraCart', JSON.stringify(cart));
@@ -448,8 +358,7 @@
             const toast = document.createElement('div');
             toast.className = 'fixed top-20 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-6 py-3 rounded-full z-50 text-sm font-bold shadow-lg';
             toast.innerText = name + (isQuote ? ' added (Ask Vendor)' : ' added to cart!');
-            document.body.appendChild(toast);
-            setTimeout(() => toast.remove(), 2000);
+            document.body.appendChild(toast); setTimeout(() => toast.remove(), 2000);
         }
         
         window.renderCart = function() {
@@ -471,19 +380,12 @@
         }
         
         window.removeFromCart = function(index) {
-            cart.splice(index, 1);
-            localStorage.setItem('leuoraCart', JSON.stringify(cart));
+            cart.splice(index, 1); localStorage.setItem('leuoraCart', JSON.stringify(cart));
             window.updateCartBadge(); window.renderCart();
         }
         
-        // --- FINAL CHECKOUT WITH LOCAL STORAGE FALLBACK & SUPABASE SAVE ---
         window.processCheckout = async function() {
-            if (!currentUser) {
-                alert("Please sign in or create an account to place an order.");
-                window.location.href = 'signup.html';
-                return;
-            }
-
+            if (!currentUser) { alert("Please sign in or create an account to place an order."); window.location.href = 'signup.html'; return; }
             const hasQuoteItems = cart.some(item => item.isQuote);
             const realItems = cart.filter(item => !item.isQuote);
             const subtotal = realItems.reduce((sum, item) => sum + item.price, 0);
@@ -491,139 +393,81 @@
             const pickup = document.getElementById('pickupLocation').value;
             const paymentMethod = document.querySelector('input[name="payment"]:checked').value;
             const txRef = "LEU-" + Date.now();
+            localStorage.setItem('leuoraPendingOrder', JSON.stringify({ txRef, cart, totalToPay, pickup, paymentMethod }));
 
-            // 1. Save pending order to local storage just in case
-            const pendingOrderObj = { txRef, cart, totalToPay, pickup, paymentMethod };
-            localStorage.setItem('leuoraPendingOrder', JSON.stringify(pendingOrderObj));
-
-            // 2. If it's ONLY clothing (0 naira), bypass Flutterwave
             if (totalToPay === 0 && hasQuoteItems) {
                 await saveOrderToDatabase(txRef, totalToPay, pickup, "pending", "pay_on_delivery", currentUser.id, realItems);
                 alert("Your clothing items have been sent to the vendor. We will contact you via WhatsApp.");
-                cart = []; 
-                localStorage.removeItem('leuoraCart');
-                localStorage.removeItem('leuoraPendingOrder'); // Clear pending
-                window.updateCartBadge(); window.renderCart(); window.switchView('view-tracking');
-                return;
+                cart = []; localStorage.removeItem('leuoraCart'); localStorage.removeItem('leuoraPendingOrder');
+                window.updateCartBadge(); window.renderCart(); window.switchView('view-tracking'); return;
             }
 
-            // 3. Otherwise, open Flutterwave
             FlutterwaveCheckout({
-                public_key: "FLWPUBK-8ec47505341e1bbaff2a67cf31c7a304-X", 
-                tx_ref: txRef,
-                amount: totalToPay,
-                currency: "NGN",
-                payment_options: "card, banktransfer, ussd",
-                customer: { email: currentUser.email, phone_number: "08100000000", name: "FUTA Student" },
+                public_key: "FLWPUBK-8ec47505341e1bbaff2a67cf31c7a304-X", tx_ref: txRef, amount: totalToPay, currency: "NGN",
+                payment_options: "card, banktransfer, ussd", customer: { email: currentUser.email, phone_number: "08100000000", name: "FUTA Student" },
                 customizations: { title: "Leuora Digital Checkout", description: "Payment for your order", logo: "https://leuora.xyz/images/logo.png" },
                 callback: async function (response) {
                     if (response.status === "successful") {
-                        // Save to Supabase
                         await saveOrderToDatabase(txRef, totalToPay, pickup, "pending", paymentMethod, currentUser.id, realItems);
-                        
                         alert("Payment Successful! Order Ref: " + txRef);
                         if (hasQuoteItems) alert("Reminder: Your clothing items will be discussed via WhatsApp.");
-                        
-                        cart = []; 
-                        localStorage.removeItem('leuoraCart');
-                        localStorage.removeItem('leuoraPendingOrder'); // Clear pending since it succeeded
+                        cart = []; localStorage.removeItem('leuoraCart'); localStorage.removeItem('leuoraPendingOrder');
                         window.updateCartBadge(); window.renderCart(); window.switchView('view-tracking');
-                    } else {
-                        alert("Payment failed. Please try again.");
-                    }
-                },
-                onclose: function() {
-                    // If they close the modal without success, the local storage still holds the order
-                    console.log("Payment modal closed.");
+                    } else { alert("Payment failed. Please try again."); }
                 }
             });
         }
 
-        // Helper function to save the order to Supabase
         async function saveOrderToDatabase(txRef, amount, pickupLocation, status, paymentMethod, userId, items) {
             try {
-                // 1. Insert Order
                 const { data: orderData, error: orderError } = await leuoraDb.from('orders').insert([{
-                    id: txRef,
-                    buyer_id: userId,
-                    total_amount: amount,
-                    pickup_location: pickupLocation,
-                    status: status,
-                    payment_method: paymentMethod,
-                    payment_status: amount > 0 ? 'paid' : 'unpaid'
+                    id: txRef, buyer_id: userId, total_amount: amount, pickup_location: pickupLocation,
+                    status: status, payment_method: paymentMethod, payment_status: amount > 0 ? 'paid' : 'unpaid'
                 }]).select().single();
-
                 if (orderError) throw orderError;
-
-                // 2. Insert Order Items
                 const orderItems = items.map(item => ({
-                    order_id: orderData.id,
-                    product_id: item.id, 
-                    supplier_id: item.supplierId,
-                    quantity: item.qty,
-                    price_at_purchase: item.price,
-                    supplier_price_at_purchase: item.supplierPrice || 0 
+                    order_id: orderData.id, product_id: item.id, supplier_id: item.supplierId,
+                    quantity: item.qty, price_at_purchase: item.price, supplier_price_at_purchase: item.supplierPrice || 0 
                 }));
-
-                if (orderItems.length > 0) {
-                    await leuoraDb.from('order_items').insert(orderItems);
-                }
-
-            } catch (error) {
-                console.error("Error saving order:", error);
-                alert("There was an issue saving your order to the database. Please contact support with your Reference ID.");
-            }
+                if (orderItems.length > 0) await leuoraDb.from('order_items').insert(orderItems);
+            } catch (error) { alert("There was an issue saving your order to the database. Please contact support with your Reference ID."); }
         }
 
         window.handleAuthAction = async function() {
-            if (currentUser) {
-                await leuoraDb.auth.signOut();
-                window.location.reload(); 
-            } else {
-                window.location.href = 'signup.html';
-            }
+            if (currentUser) { await leuoraDb.auth.signOut(); window.location.reload(); } 
+            else { window.location.href = 'signup.html'; }
         }
 
         // --- INITIALIZATION ---
         document.addEventListener('DOMContentLoaded', async () => {
-            // SPLASH SCREEN
             setTimeout(() => {
                 const splash = document.getElementById('splashScreen');
-                if (splash) {
-                    splash.classList.add('splash-hidden');
-                    setTimeout(() => splash.remove(), 500);
-                }
+                if (splash) { splash.classList.add('splash-hidden'); setTimeout(() => splash.remove(), 500); }
             }, 2000);
 
             try {
+                // 1. Get Session
                 const { data: { session } } = await leuoraDb.auth.getSession();
                 currentUser = session ? session.user : null;
                 
+                // 2. Load Data
                 loadAnnouncement(); 
                 loadProducts(); 
-                loadAccount(); 
+                await loadAccount(); // 3. Wait for Account to load
                 window.updateCartBadge(); 
                 window.renderCart(); 
                 
-                if (currentUser && "Notification" in window) {
-                    if (Notification.permission === "granted") {
-                        document.getElementById('notifToggle').checked = true;
-                    }
+                if (currentUser && "Notification" in window && Notification.permission === "granted") {
+                    document.getElementById('notifToggle').checked = true;
                 }
 
-                // --- CHECK FOR PENDING ORDERS (Network Failure Recovery) ---
+                // 4. Check for Pending Orders
                 const pendingOrderStr = localStorage.getItem('leuoraPendingOrder');
                 if (pendingOrderStr) {
                     const pendingOrder = JSON.parse(pendingOrderStr);
-                    const msg = `⚠️ You have an uncompleted order.\n\nIf your card was debited, please contact us on WhatsApp with your Order Ref: ${pendingOrder.txRef} so we can verify it manually.\n\nClick OK to go to WhatsApp. Click Cancel to clear this alert.`;
-                    
-                    if (confirm(msg)) {
-                        const waMsg = `Hello Leuora Support, my card was debited but my order failed. My Order Ref is: ${pendingOrder.txRef}`;
-                        window.open(`https://wa.me/2348167914665?text=${encodeURIComponent(waMsg)}`, '_blank');
-                    } else {
-                        // They clicked cancel, remove the pending order so it doesn't bother them again
-                        localStorage.removeItem('leuoraPendingOrder');
-                    }
+                    const msg = `⚠️ You have an uncompleted order.\n\nIf your card was debited, please contact us on WhatsApp with your Order Ref: ${pendingOrder.txRef}`;
+                    if (confirm(msg)) { window.open(`https://wa.me/2348167914665?text=${encodeURIComponent(msg)}`, '_blank'); } 
+                    else { localStorage.removeItem('leuoraPendingOrder'); }
                 }
 
                 let currentSlide = 0;
