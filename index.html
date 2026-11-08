@@ -106,7 +106,7 @@
         <!-- Action Buttons -->
         <div class="w-full space-y-4">
             
-            <!-- 🚨 NOTICE THE NEW BACKEND LINK HERE 🚨 -->
+            <!-- Install APK Button (Pointing to Render Backend) -->
             <a href="https://leuora-backend.onrender.com/download" 
                onclick="showInstallModal()" 
                class="flex items-center justify-between w-full bg-leuoraYellow text-leuoraBlue p-4 rounded-2xl shadow-lg hover:bg-yellow-400 transition">
@@ -182,6 +182,7 @@
 
         // POPUP LOGIC
         function showInstallModal() {
+            // Show the popup while the download happens in the background
             document.getElementById('installModal').classList.add('active');
         }
 
