@@ -2,7 +2,7 @@ const express = require('express');
 const webpush = require('web-push');
 const cors = require('cors');
 const path = require('path');
-const { createClient } = require('@supabase/supabase-js'); // Need this for backend updates
+const { createClient } = require('@supabase/supabase-js');
 
 const app = express();
 app.use(cors());
@@ -12,7 +12,6 @@ app.use(express.json());
 const publicVapidKey = process.env.VAPID_PUBLIC_KEY; 
 const privateVapidKey = process.env.VAPID_PRIVATE_KEY;
 const flwSecretHash = process.env.FLW_SECRET_HASH;
-// Note: The Service Role Key bypasses RLS. Keep it SECRET.
 const supabaseUrl = 'https://rmlgvsvvbwoudrosbbpd.supabase.co';
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
@@ -37,7 +36,6 @@ app.post('/send-notification', async (req, res) => {
 
 // 2. Flutterwave Webhook (The Secure Way)
 app.post('/api/flutterwave-webhook', async (req, res) => {
-    // Verify the request is actually from Flutterwave
     const signature = req.headers['verif-hash'];
     if (!signature || signature !== flwSecretHash) {
         return res.status(401).end(); // Unauthorized
@@ -46,15 +44,13 @@ app.post('/api/flutterwave-webhook', async (req, res) => {
     const payload = req.body;
     console.log("Payment Webhook Received:", payload);
 
-    // Check if payment was successful
     if (payload.data.status === 'successful') {
-        const txRef = payload.data.tx_ref; // The order ID we sent to Flutterwave
+        const txRef = payload.data.tx_ref; 
         
-        // Update order in Supabase (Bypassing RLS using Service Key)
         const { error } = await supabaseAdmin
             .from('orders')
-            .update({ payment_status: 'paid', status: 'shipped' }) // Mark as paid
-            .eq('id', txRef); // Match the order ID
+            .update({ payment_status: 'paid', status: 'shipped' })
+            .eq('id', txRef); 
 
         if (error) console.error("Supabase Update Error:", error);
         else console.log("Order marked as paid:", txRef);
@@ -63,7 +59,55 @@ app.post('/api/flutterwave-webhook', async (req, res) => {
     res.status(200).end();
 });
 
-// 3. Serve Frontend
+// 3. DYNAMIC SITEMAP GENERATOR (Must be before catch-all)
+app.get('/sitemap.xml', async (req, res) => {
+    try {
+        const { data: products, error } = await supabaseAdmin
+            .from('products')
+            .select('id, created_at')
+            .eq('status', 'approved');
+
+        if (error) throw error;
+
+        let xml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+    <!-- Main Pages -->
+    <url>
+        <loc>https://leuora.xyz/</loc>
+        <priority>1.0</priority>
+        <image:image><image:loc>https://leuora.xyz/images/hero1.jpg</image:loc></image:image>
+        <image:image><image:loc>https://leuora.xyz/images/hero2.jpg</image:loc></image:image>
+        <image:image><image:loc>https://leuora.xyz/images/hero3.jpg</image:loc></image:image>
+    </url>
+    <url><loc>https://leuora.xyz/index.html</loc><priority>0.9</priority></url>
+    <url><loc>https://leuora.xyz/signup.html</loc><priority>0.8</priority></url>
+    <url><loc>https://leuora.xyz/app.html</loc><priority>0.8</priority></url>
+`;
+
+        // Add all products dynamically
+        if (products && products.length > 0) {
+            products.forEach(product => {
+                const date = new Date(product.created_at).toISOString().split('T')[0];
+                xml += `    <url>
+        <loc>https://leuora.xyz/product.html?id=${product.id}</loc>
+        <lastmod>${date}</lastmod>
+        <priority>0.7</priority>
+    </url>\n`;
+            });
+        }
+
+        xml += `</urlset>`;
+
+        res.header('Content-Type', 'application/xml');
+        res.send(xml);
+
+    } catch (error) {
+        console.error("Sitemap error:", error);
+        res.status(500).send("Error generating sitemap");
+    }
+});
+
+// 4. Serve Frontend (Static files and catch-all)
 app.use(express.static(path.join(__dirname, '../')));
 app.get('*', (req, res) => res.sendFile(path.join(__dirname, '../index.html')));
 
