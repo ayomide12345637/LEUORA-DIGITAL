@@ -107,7 +107,24 @@ app.get('/sitemap.xml', async (req, res) => {
     }
 });
 
-// 4. Serve Frontend (Static files and catch-all)
+// 4. APK DOWNLOAD ROUTE (NEW)
+// This forces the browser to download the APK file properly
+app.get('/download', (req, res) => {
+    // Points to the APK in the root folder (one level up from the backend folder)
+    const apkPath = path.join(__dirname, '../LeuoraDigital.apk');
+    
+    res.setHeader('Content-Type', 'application/vnd.android.package-archive');
+    res.setHeader('Content-Disposition', 'attachment; filename="LeuoraDigital.apk"');
+    
+    res.download(apkPath, 'LeuoraDigital.apk', (err) => {
+        if (err) {
+            console.error("Error downloading APK:", err);
+            res.status(404).send("APK not found. Please ensure LeuoraDigital.apk is in the root of your repository.");
+        }
+    });
+});
+
+// 5. Serve Frontend (Static files and catch-all)
 app.use(express.static(path.join(__dirname, '../')));
 app.get('*', (req, res) => res.sendFile(path.join(__dirname, '../index.html')));
 
